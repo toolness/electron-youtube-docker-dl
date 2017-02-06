@@ -12,11 +12,11 @@ RUN curl -L https://bootstrap.pypa.io/get-pip.py \
   python3.6 /get-pip.py && \
   rm /get-pip.py
 
-RUN pip install youtube_dl
-
-RUN pip install rq flask mypy flake8
-
 RUN ln -s /usr/bin/python3.6 /usr/bin/python
+
+COPY requirements.txt /
+
+RUN pip install -r /requirements.txt
 
 COPY scripts/ /usr/local/bin/
 

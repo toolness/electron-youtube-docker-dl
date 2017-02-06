@@ -1,0 +1,8 @@
+Flask==0.12
+rq==0.7.1
+youtube-dl==2017.2.4.1
+
+# For development
+
+flake8==3.2.1
+mypy==0.470
