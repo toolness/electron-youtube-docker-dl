@@ -14,6 +14,8 @@ RUN curl -L https://bootstrap.pypa.io/get-pip.py \
 
 RUN pip install youtube_dl
 
+RUN pip install rq flask
+
 RUN ln -s /usr/bin/python3.6 /usr/bin/python
 
 COPY download-mp4.sh /usr/local/bin/download-mp4

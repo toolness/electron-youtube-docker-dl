@@ -1,7 +1,25 @@
 version: '2'
 services:
   app:
-    build: .
-    volumes:
-      - ./downloads:/downloads
-    working_dir: /downloads
+    extends:
+      file: docker-services.yml
+      service: base_app
+    ports:
+      - 5000:5000
+    links:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+    command: python -m flask run --host=0.0.0.0
+  worker:
+    extends:
+      file: docker-services.yml
+      service: base_app
+    links:
+      - redis
+    working_dir: /src
+    environment:
+      - DOWNLOAD_DIR=/downloads
+    command: rq worker -u redis://redis
+  redis:
+    image: redis:3.0.7-alpine
