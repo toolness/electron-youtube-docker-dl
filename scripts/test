@@ -1,0 +1,10 @@
+#! /bin/bash
+
+set -e
+
+cd /src
+
+mypy tasks.py
+flake8 *.py
+
+echo "Hooray, all tests passed!"

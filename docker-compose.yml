@@ -9,6 +9,8 @@ services:
     links:
       - redis
     environment:
+      - FLASK_DEBUG=1
+      - FLASK_APP=/src/app.py
       - REDIS_HOST=redis
     command: python -m flask run --host=0.0.0.0
   worker:
@@ -18,6 +20,8 @@ services:
     links:
       - redis
     working_dir: /src
+    volumes:
+      - ./downloads:/downloads
     environment:
       - DOWNLOAD_DIR=/downloads
     command: rq worker -u redis://redis

@@ -14,10 +14,10 @@ RUN curl -L https://bootstrap.pypa.io/get-pip.py \
 
 RUN pip install youtube_dl
 
-RUN pip install rq flask
+RUN pip install rq flask mypy flake8
 
 RUN ln -s /usr/bin/python3.6 /usr/bin/python
 
-COPY download-mp4.sh /usr/local/bin/download-mp4
+COPY scripts/ /usr/local/bin/
 
-RUN chmod a+rx /usr/local/bin/download-mp4
+RUN chmod a+rx /usr/local/bin/*

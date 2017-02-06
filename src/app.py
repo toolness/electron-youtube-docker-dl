@@ -10,6 +10,7 @@ q = Queue(connection=redis_conn)
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     url = None

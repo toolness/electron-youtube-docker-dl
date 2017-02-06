@@ -9,7 +9,8 @@ YOUTUBE_DOMAINS = [
     'www.youtube.com'
 ]
 
-def download(url, max_retries=3):
+
+def download(url: str, max_retries: int=3):
     o = urlparse(url)
     if o.hostname.lower() in YOUTUBE_DOMAINS:
         cmd = 'download-mp4'

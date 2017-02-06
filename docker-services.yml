@@ -3,12 +3,9 @@ services:
   base_app:
     build: .
     volumes:
-      - ./downloads:/downloads
       - ./src:/src
-    working_dir: /downloads
+    working_dir: /src
     environment:
-      - FLASK_DEBUG=1
-      - FLASK_APP=/src/app.py
       - LC_ALL=C.UTF-8
       - LANG=C.UTF-8
       - PYTHONUNBUFFERED=yup
