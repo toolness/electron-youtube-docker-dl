@@ -16,5 +16,5 @@ def index():
     url = None
     if request.method == 'POST':
         url = request.form['url']
-        q.enqueue(tasks.download, url)
+        q.enqueue(tasks.download, url, timeout=600)
     return render_template('index.html', url=url)
