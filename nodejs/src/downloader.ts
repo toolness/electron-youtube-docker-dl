@@ -94,6 +94,9 @@ export default class DockerizedDownloader {
     });
   }
 
+  async prepareHost(): Promise<void> {
+  }
+
   async getVideoInfo(url: string): Promise<VideoInfo> {
     const dataParts: string[] = [];
     const stream = through2((chunk, enc, callback) => {
@@ -111,7 +114,7 @@ export default class DockerizedDownloader {
       });
     });
 
-    await this.download('youtube-dl', [
+    await this.runInContainer('youtube-dl', [
       '--restrict-filenames',
       '--no-warnings',
       '-j', url
@@ -122,7 +125,10 @@ export default class DockerizedDownloader {
     return <VideoInfo> await parsedInfo;
   }
 
-  async download(cmd: string, args: string[], options?: RunOptions): Promise<void> {
-    return await this.runInContainer(cmd, args, options);
+  async download(url: string): Promise<void> {
+    return await this.runInContainer('youtube-dl', [
+      '--restrict-filenames',
+      url,
+    ]);
   }
 }

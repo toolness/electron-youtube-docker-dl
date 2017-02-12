@@ -41,7 +41,7 @@ export default class DockerMachinedDownloader extends DockerizedDownloader {
     this.machineName = options.machineName;
   }
 
-  async download(cmd: string, args: string[], options?: RunOptions) {
+  async prepareHost(): Promise<void> {
     try {
       await runInHost('docker-machine', ['active']);
     } catch (e) {
@@ -57,7 +57,5 @@ export default class DockerMachinedDownloader extends DockerizedDownloader {
         await runInHost('docker-machine', ['restart', this.machineName]);
       } else throw e;
     }
-
-    await super.download(cmd, args, options);
   }
 }

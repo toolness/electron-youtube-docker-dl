@@ -30,11 +30,13 @@ let d = new DockerMachinedDownloader({
 });
 
 async function main() {
+  await d.prepareHost();
+
   const url = 'https://www.youtube.com/watch?v=y7afWRBNXwQ';
   const info = await d.getVideoInfo(url);
 
   console.log('Full title is', info.fulltitle);
-  await d.download('youtube-dl', ['--restrict-filenames', url]);
+  await d.download(url);
 }
 
 if (module.parent === null) {
