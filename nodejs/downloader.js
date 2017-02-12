@@ -14,7 +14,8 @@ module.exports = class DockerizedDownloader {
     this.image = options.image;
     this.dir = path.resolve(options.dir);
 
-    if (process.env['COMPOSE_CONVERT_WINDOWS_PATHS'] === '1') {
+    if (process.env['COMPOSE_CONVERT_WINDOWS_PATHS'] === '1' ||
+        process.env['COMPOSE_CONVERT_WINDOWS_PATHS'] === 'true') {
       this.dir = convertWindowsPath(this.dir);
     }
   }
