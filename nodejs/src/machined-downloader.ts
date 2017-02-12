@@ -33,7 +33,7 @@ interface MachinedDownloaderOptions extends DownloaderOptions {
   machineName: string;
 }
 
-class DockerMachinedDownloader extends DockerizedDownloader {
+export default class DockerMachinedDownloader extends DockerizedDownloader {
   machineName: string;
 
   constructor(options: MachinedDownloaderOptions) {
@@ -41,7 +41,7 @@ class DockerMachinedDownloader extends DockerizedDownloader {
     this.machineName = options.machineName;
   }
 
-  async download(cmd: string, args: string[], options: RunOptions) {
+  async download(cmd: string, args: string[], options?: RunOptions) {
     try {
       await runInHost('docker-machine', ['active']);
     } catch (e) {
@@ -61,5 +61,3 @@ class DockerMachinedDownloader extends DockerizedDownloader {
     await super.download(cmd, args, options);
   }
 }
-
-module.exports = DockerMachinedDownloader;

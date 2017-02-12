@@ -2,6 +2,7 @@ import * as path from 'path';
 import {Stream} from 'stream';
 import {EventEmitter} from 'events';
 import Docker = require('dockerode');
+import through2 = require('through2');
 import {COMMAND_FAILED} from './constants';
 
 export function convertWindowsPath(pathname: string) {
@@ -18,6 +19,33 @@ export interface DownloaderOptions {
 
 export interface RunOptions {
   out?: NodeJS.WritableStream
+}
+
+export interface VideoInfo {
+  id: string;
+  uploader: string;
+  uploader_id: string;
+  uploader_url: string;
+  upload_date: string;
+  license: string;
+  title: string;
+  thumbnail: string;
+  description: string;
+  categories: string[];
+  tags: string[];
+  duration: number;
+  age_limit: number;
+  webpage_url: string;
+  view_count: number;
+  like_count: number;
+  dislike_count: number;
+  average_rating: number;
+  fulltitle: string;
+  display_id: string;
+  width: number;
+  height: number;
+  fps: number;
+  ext: string;
 }
 
 export default class DockerizedDownloader {
@@ -66,7 +94,35 @@ export default class DockerizedDownloader {
     });
   }
 
-  async download(cmd: string, args: string[], options: RunOptions): Promise<void> {
+  async getVideoInfo(url: string): Promise<VideoInfo> {
+    const dataParts: string[] = [];
+    const stream = through2((chunk, enc, callback) => {
+      dataParts.push(chunk.toString('ascii'));
+      callback();
+    });
+    const parsedInfo = new Promise((resolve, reject) => {
+      stream.on('finish', () => {
+        const allData = dataParts.join('');
+        try {
+          resolve(JSON.parse(allData));
+        } catch (e) {
+          reject('unable to parse JSON: ' + allData);
+        }
+      });
+    });
+
+    await this.download('youtube-dl', [
+      '--restrict-filenames',
+      '--no-warnings',
+      '-j', url
+    ], {
+      out: stream,
+    });
+
+    return <VideoInfo> await parsedInfo;
+  }
+
+  async download(cmd: string, args: string[], options?: RunOptions): Promise<void> {
     return await this.runInContainer(cmd, args, options);
   }
 }
