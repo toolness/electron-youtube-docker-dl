@@ -6,6 +6,12 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "outDir": "./build",
+        "baseUrl": "./",
+        "paths": {
+            "*": [
+                "./typings/*"
+            ]
+        },
         "lib": ["es5", "es2017"]
     },
     "include": [

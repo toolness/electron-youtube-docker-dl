@@ -1,7 +1,7 @@
 import * as path from 'path';
-import {Writable} from 'stream';
+import {Stream} from 'stream';
 import {EventEmitter} from 'events';
-const Docker = require('dockerode');
+import Docker = require('dockerode');
 import {COMMAND_FAILED} from './constants';
 
 function convertWindowsPath(pathname: string) {
@@ -11,17 +11,17 @@ function convertWindowsPath(pathname: string) {
 }
 
 export interface DownloaderOptions {
-  docker: any,
+  docker: Docker,
   image: string,
   dir: string,
 }
 
 export interface RunOptions {
-  out?: Writable
+  out?: NodeJS.WritableStream
 }
 
 export default class DockerizedDownloader {
-  docker: any;
+  docker: Docker;
   image: string;
   dir: string;
 
@@ -44,7 +44,7 @@ export default class DockerizedDownloader {
     return new Promise((resolve, reject) => {
       this.docker.run(this.image, [cmd, ...args], out, {
         WorkingDir: '/downloads',
-      }, (err: any, data: any, container: any) => {
+      }, (err, data, container) => {
         if (err) {
           return reject(err);
         }
