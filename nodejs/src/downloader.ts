@@ -36,12 +36,12 @@ export default class DockerizedDownloader {
     }
   }
 
-  runInContainer(cmd: string, args: string[], options?: RunOptions) {
+  runInContainer(cmd: string, args: string[], options?: RunOptions): Promise<void> {
     options = options || {};
 
     const out = options.out || process.stdout;
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.docker.run(this.image, [cmd, ...args], out, {
         WorkingDir: '/downloads',
       }, (err, data, container) => {
@@ -66,7 +66,7 @@ export default class DockerizedDownloader {
     });
   }
 
-  async download(cmd: string, args: string[], options: RunOptions) {
-    await this.runInContainer(cmd, args, options);
+  async download(cmd: string, args: string[], options: RunOptions): Promise<void> {
+    return await this.runInContainer(cmd, args, options);
   }
 }
