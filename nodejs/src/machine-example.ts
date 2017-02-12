@@ -15,7 +15,30 @@ function loadCert(name: string): string {
 }
 
 interface VideoInfo {
+  id: string;
+  uploader: string;
+  uploader_id: string;
+  uploader_url: string;
+  upload_date: string;
+  license: string;
+  title: string;
+  thumbnail: string;
+  description: string;
+  categories: string[];
+  tags: string[];
+  duration: number;
+  age_limit: number;
+  webpage_url: string;
+  view_count: number;
+  like_count: number;
+  dislike_count: number;
+  average_rating: number;
   fulltitle: string;
+  display_id: string;
+  width: number;
+  height: number;
+  fps: number;
+  ext: string;
 }
 
 const docker = new Docker({
@@ -51,7 +74,11 @@ async function getJsonInfo(url: string): Promise<VideoInfo> {
     });
   });
 
-  await d.download('youtube-dl', ['--restrict-filenames', '-j', url], {
+  await d.download('youtube-dl', [
+    '--restrict-filenames',
+    '--no-warnings',
+    '-j', url
+  ], {
     out: stream,
   });
 
@@ -60,8 +87,9 @@ async function getJsonInfo(url: string): Promise<VideoInfo> {
 
 async function main() {
   const url = 'https://www.youtube.com/watch?v=y7afWRBNXwQ';
+  const info = await getJsonInfo(url);
 
-  console.log('Full title is', (await getJsonInfo(url)).fulltitle);
+  console.log('Full title is', info.fulltitle);
   await d.download('youtube-dl', ['--restrict-filenames', url]);
 }
 
