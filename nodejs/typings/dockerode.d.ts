@@ -13,15 +13,26 @@ declare interface DockerodeOptions {
   version: string
 }
 
-declare class Container {
-  remove(cb: (err: any) => void): void;
+declare namespace Dockerode {
+  interface Container {
+    remove(cb: (err: any) => void): void;
+    defaultOptions: {
+      start: {
+        Binds: string[]
+      }
+    }
+  }
+
+  interface RunEmitter extends EventEmitter {
+    on(event: 'container', listener: (c: Dockerode.Container) => void): this;
+  }
 }
 
-type RunCallback = (err: any, data: any, container: Container) => void;
+type RunCallback = (err: any, data: any, container: Dockerode.Container) => void;
 
 declare class Dockerode {
   constructor(options: DockerodeOptions);
-  run(image: string, args: string[], output: NodeJS.WritableStream, options: RunOptions, cb: RunCallback): EventEmitter;
+  run(image: string, args: string[], output: NodeJS.WritableStream, options: RunOptions, cb: RunCallback): Dockerode.RunEmitter;
 }
 
 export = Dockerode;

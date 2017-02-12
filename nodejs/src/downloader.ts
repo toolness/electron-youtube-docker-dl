@@ -58,7 +58,7 @@ export default class DockerizedDownloader {
           }
           resolve();
         });
-      }).on('container', (container: any) => {
+      }).on('container', (container) => {
         container.defaultOptions.start.Binds = [
           this.dir + ':/downloads:rw'
         ];
