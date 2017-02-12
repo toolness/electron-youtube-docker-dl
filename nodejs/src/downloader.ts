@@ -1,15 +1,31 @@
-const path = require('path');
+import * as path from 'path';
+import {Writable} from 'stream';
+import {EventEmitter} from 'events';
+const Docker = require('dockerode');
+import {COMMAND_FAILED} from './constants';
 
-const {COMMAND_FAILED} = require('./constants');
-
-function convertWindowsPath(pathname) {
+function convertWindowsPath(pathname: string) {
   return pathname.replace(
     /^([A-Z])\:\\/, (_, letter) => '/' + letter.toLowerCase() + '/'
   ).replace(/\\/g, '/');
 }
 
-module.exports = class DockerizedDownloader {
-  constructor(options) {
+export interface DownloaderOptions {
+  docker: any,
+  image: string,
+  dir: string,
+}
+
+export interface RunOptions {
+  out?: Writable
+}
+
+export default class DockerizedDownloader {
+  docker: any;
+  image: string;
+  dir: string;
+
+  constructor(options: DownloaderOptions) {
     this.docker = options.docker;
     this.image = options.image;
     this.dir = path.resolve(options.dir);
@@ -20,7 +36,7 @@ module.exports = class DockerizedDownloader {
     }
   }
 
-  runInContainer(cmd, args, options) {
+  runInContainer(cmd: string, args: string[], options?: RunOptions) {
     options = options || {};
 
     const out = options.out || process.stdout;
@@ -28,12 +44,12 @@ module.exports = class DockerizedDownloader {
     return new Promise((resolve, reject) => {
       this.docker.run(this.image, [cmd, ...args], out, {
         WorkingDir: '/downloads',
-      }, (err, data, container) => {
+      }, (err: any, data: any, container: any) => {
         if (err) {
           return reject(err);
         }
 
-        container.remove((err) => {
+        container.remove((err: any) => {
           if (err) {
             return reject(err);
           }
@@ -42,7 +58,7 @@ module.exports = class DockerizedDownloader {
           }
           resolve();
         });
-      }).on('container', container => {
+      }).on('container', (container: any) => {
         container.defaultOptions.start.Binds = [
           this.dir + ':/downloads:rw'
         ];
@@ -50,7 +66,7 @@ module.exports = class DockerizedDownloader {
     });
   }
 
-  async download(cmd, args, options) {
+  async download(cmd: string, args: string[], options: RunOptions) {
     await this.runInContainer(cmd, args, options);
   }
-};
+}

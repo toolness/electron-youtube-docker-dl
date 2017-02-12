@@ -1,10 +1,11 @@
-const dns = require('dns');
-const {spawn} = require('child_process');
+import * as dns from 'dns';
+import {spawn} from 'child_process';
 
-const DockerizedDownloader = require('./downloader');
-const {COMMAND_FAILED} = require('./constants');
+import DockerizedDownloader from './downloader';
+import {DownloaderOptions, RunOptions} from './downloader';
+import {COMMAND_FAILED} from './constants';
 
-function resolveDns(hostname) {
+function resolveDns(hostname: string) {
   return new Promise((resolve, reject) => {
     dns.resolve(hostname, (err, addresses) => {
       if (err) {
@@ -15,7 +16,7 @@ function resolveDns(hostname) {
   });
 }
 
-function runInHost(cmd, args) {
+function runInHost(cmd: string, args: string[]) {
   return new Promise((resolve, reject) => {
     spawn(cmd, args, {
       stdio: 'inherit',
@@ -28,13 +29,19 @@ function runInHost(cmd, args) {
   });
 }
 
+interface MachinedDownloaderOptions extends DownloaderOptions {
+  machineName: string;
+}
+
 class DockerMachinedDownloader extends DockerizedDownloader {
-  constructor(options) {
+  machineName: string;
+
+  constructor(options: MachinedDownloaderOptions) {
     super(options);
     this.machineName = options.machineName;
   }
 
-  async download(cmd, args, options) {
+  async download(cmd: string, args: string[], options: RunOptions) {
     try {
       await runInHost('docker-machine', ['active']);
     } catch (e) {
