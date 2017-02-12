@@ -4,7 +4,7 @@ import {EventEmitter} from 'events';
 import Docker = require('dockerode');
 import {COMMAND_FAILED} from './constants';
 
-function convertWindowsPath(pathname: string) {
+export function convertWindowsPath(pathname: string) {
   return pathname.replace(
     /^([A-Z])\:\\/, (_, letter) => '/' + letter.toLowerCase() + '/'
   ).replace(/\\/g, '/');

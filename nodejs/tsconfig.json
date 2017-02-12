@@ -15,7 +15,8 @@
         "lib": ["es5", "es2017"]
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "test/**/*"
     ],
     "exclude": [
         "node_modules",

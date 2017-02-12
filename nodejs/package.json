@@ -2,18 +2,22 @@
   "name": "dockerode-fun",
   "version": "1.0.0",
   "description": "",
-  "main": "fun.js",
+  "main": "build/src/machine-example.js",
   "dependencies": {
+    "@types/expect.js": "^0.3.29",
+    "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
     "@types/through2": "^2.0.32",
     "dockerode": "^2.3.1",
+    "expect.js": "^0.3.1",
+    "mocha": "^3.2.0",
     "through2": "^2.0.3",
     "typescript": "2.1.6"
   },
   "devDependencies": {},
   "scripts": {
-    "start": "tsc && node build/machine-example.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc && node build/src/machine-example.js",
+    "test": "tsc && mocha build/test/"
   },
   "author": "",
   "license": "ISC"
