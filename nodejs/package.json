@@ -19,7 +19,7 @@
   "devDependencies": {},
   "scripts": {
     "start": "tsc && electron .",
-    "downloadtest": "tsc && node build/src/machine-example.js",
+    "downloadtest": "tsc && node build/src/cli.js https://www.youtube.com/watch?v=y7afWRBNXwQ",
     "test": "tsc && mocha build/test/"
   },
   "author": "",
