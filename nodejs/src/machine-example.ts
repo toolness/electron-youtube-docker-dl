@@ -26,7 +26,7 @@ let d = new DockerMachinedDownloader({
   docker,
   image: 'youtubedldockerized_app',
   machineName: process.env['DOCKER_MACHINE_NAME'],
-  dir: path.join(__dirname, '..', 'downloads'),
+  dir: path.join(__dirname, '..', '..', 'downloads'),
 });
 
 async function main() {

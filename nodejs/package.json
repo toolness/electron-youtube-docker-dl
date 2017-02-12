@@ -2,13 +2,15 @@
   "name": "dockerode-fun",
   "version": "1.0.0",
   "description": "",
-  "main": "build/src/machine-example.js",
+  "main": "build/src/main.js",
   "dependencies": {
+    "@types/electron": "^1.4.32",
     "@types/expect.js": "^0.3.29",
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
     "@types/through2": "^2.0.32",
     "dockerode": "^2.3.1",
+    "electron": "^1.4.15",
     "expect.js": "^0.3.1",
     "mocha": "^3.2.0",
     "through2": "^2.0.3",
@@ -16,7 +18,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "tsc && node build/src/machine-example.js",
+    "start": "tsc && electron .",
+    "downloadtest": "tsc && node build/src/machine-example.js",
     "test": "tsc && mocha build/test/"
   },
   "author": "",

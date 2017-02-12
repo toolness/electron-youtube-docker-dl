@@ -12,7 +12,7 @@
                 "./typings/*"
             ]
         },
-        "lib": ["es5", "es2017"]
+        "lib": ["es5", "es2017", "dom"]
     },
     "include": [
         "src/**/*",
