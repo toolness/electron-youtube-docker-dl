@@ -19,9 +19,13 @@ module.exports = class DockerizedDownloader {
     }
   }
 
-  runInContainer(cmd, args) {
+  runInContainer(cmd, args, options) {
+    options = options || {};
+
+    const out = options.out || process.stdout;
+
     return new Promise((resolve, reject) => {
-      this.docker.run(this.image, [cmd, ...args], process.stdout, {
+      this.docker.run(this.image, [cmd, ...args], out, {
         WorkingDir: '/downloads',
       }, (err, data, container) => {
         if (err) {
@@ -45,7 +49,7 @@ module.exports = class DockerizedDownloader {
     });
   }
 
-  async download(cmd, args) {
-    await this.runInContainer(cmd, args);
+  async download(cmd, args, options) {
+    await this.runInContainer(cmd, args, options);
   }
 };

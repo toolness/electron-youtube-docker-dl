@@ -2,6 +2,7 @@ const Docker = require('dockerode');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
+const through2 = require('through2');
 
 const DockerMachinedDownloader = require('./machined-downloader');
 
@@ -24,6 +25,37 @@ let d = new DockerMachinedDownloader({
   dir: path.join(__dirname, '..', 'downloads'),
 });
 
+async function getJsonInfo(url) {
+  const dataParts = [];
+  const stream = through2((chunk, enc, callback) => {
+    dataParts.push(chunk.toString('ascii'));
+    callback();
+  });
+  const parsedInfo = new Promise((resolve, reject) => {
+    stream.on('finish', () => {
+      const allData = dataParts.join('');
+      try {
+        resolve(JSON.parse(allData));
+      } catch (e) {
+        reject('unable to parse JSON: ' + allData);
+      }
+    });
+  });
+
+  await d.download('youtube-dl', ['--restrict-filenames', '-j', url], {
+    out: stream,
+  });
+
+  return await parsedInfo;
+}
+
+async function main() {
+  const url = 'https://www.youtube.com/watch?v=y7afWRBNXwQ';
+
+  console.log('Full title is', (await getJsonInfo(url)).fulltitle);
+  await d.download('youtube-dl', ['--restrict-filenames', url]);
+}
+
 if (module.parent === null) {
-  d.download('youtube-dl', ['https://www.youtube.com/watch?v=y7afWRBNXwQ']);
+  main();
 }

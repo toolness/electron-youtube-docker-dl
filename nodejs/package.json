@@ -4,7 +4,8 @@
   "description": "",
   "main": "fun.js",
   "dependencies": {
-    "dockerode": "^2.3.1"
+    "dockerode": "^2.3.1",
+    "through2": "^2.0.3"
   },
   "devDependencies": {},
   "scripts": {
