@@ -13,6 +13,13 @@ function getDockerMachinedDownloader(): DockerMachinedDownloader {
   const DOCKER_CERT_PATH = process.env['DOCKER_CERT_PATH'];
   const {hostname, port} = url.parse(process.env['DOCKER_HOST']);
 
+  if (hostname === undefined) {
+    throw new Error('hostname not in DOCKER_HOST');
+  }
+  if (port === undefined) {
+    throw new Error('port not in DOCKER_HOST');
+  }
+
   function loadCert(name: string): string {
     return fs.readFileSync(path.join(DOCKER_CERT_PATH, name))
       .toString('ascii');
