@@ -1,4 +1,4 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, ipcMain} from 'electron';
 import * as url from 'url';
 import * as path from 'path';
 
@@ -17,4 +17,8 @@ app.on('ready', () => {
   }));
 
   win.webContents.openDevTools();
+});
+
+ipcMain.on('download', (event, url: string) => {
+  console.log('TODO: Start download of ' + url);
 });
