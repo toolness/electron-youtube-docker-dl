@@ -16,6 +16,7 @@ declare interface DockerodeOptions {
 declare namespace Dockerode {
   interface Container {
     remove(cb: (err: any) => void): void;
+    stop(options: {t?: number}, cb: (err: any, data: any) => void): void;
     defaultOptions: {
       start: {
         Binds: string[]

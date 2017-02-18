@@ -18,7 +18,8 @@ export interface DownloaderOptions {
 }
 
 export interface RunOptions {
-  out?: NodeJS.WritableStream
+  out?: NodeJS.WritableStream,
+  containerCb?: (container: Docker.Container) => void;
 }
 
 export interface VideoInfo {
@@ -68,6 +69,7 @@ export default class DockerizedDownloader {
     options = options || {};
 
     const out = options.out || process.stdout;
+    const containerCb = options.containerCb || function() {};
 
     return new Promise<void>((resolve, reject) => {
       this.docker.run(this.image, [cmd, ...args], out, {
@@ -90,6 +92,7 @@ export default class DockerizedDownloader {
         container.defaultOptions.start.Binds = [
           this.dir + ':/downloads:rw'
         ];
+        containerCb(container);
       });
     });
   }
@@ -125,10 +128,27 @@ export default class DockerizedDownloader {
     return <VideoInfo> await parsedInfo;
   }
 
-  async download(url: string): Promise<void> {
+  async download(url: string, cancelPromise?: Promise<void>): Promise<void> {
+    if (cancelPromise) {
+      cancelPromise.catch(() => {});
+    }
+
     return await this.runInContainer('youtube-dl', [
       '--restrict-filenames',
       url,
-    ]);
+    ], {
+      containerCb(container) {
+        if (cancelPromise) {
+          cancelPromise.then(() => {
+            console.log(`Stopping download of ${url}.`);
+            container.stop({t: 1}, (err) => {
+              if (err) {
+                console.log('Error stopping container:', err);
+              }
+            });
+          });
+        }
+      }
+    });
   }
 }
