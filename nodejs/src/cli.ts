@@ -1,14 +1,14 @@
 import DockerizedDownloader from './downloader';
 import getDownloader from './get-downloader';
 
-async function main(d: DockerizedDownloader, url: string) {
+async function main(d: DockerizedDownloader, url: string): Promise<void> {
   await d.prepareHost();
 
   const info = await d.getVideoInfo(url);
 
   console.log('Full title is', info.fulltitle);
 
-  await d.download(url);
+  return await d.download(url).promise;
 }
 
 if (module.parent === null) {
@@ -16,5 +16,13 @@ if (module.parent === null) {
     console.log('Please provide a URL of a video to download.');
     process.exit(1);
   }
-  main(getDownloader(), process.argv[2]);
+
+  let promise = main(getDownloader(), process.argv[2]);
+
+  promise.then(() => {
+    console.log('Download successful.');
+  }, (err) => {
+    console.log('Download failed:', err);
+    process.exit(1);
+  });
 }

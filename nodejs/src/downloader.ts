@@ -49,6 +49,11 @@ export interface VideoInfo {
   ext: string;
 }
 
+export interface DownloadRequest {
+  promise: Promise<void>;
+  cancel(): void;
+}
+
 export default class DockerizedDownloader {
   docker: Docker;
   image: string;
@@ -128,27 +133,34 @@ export default class DockerizedDownloader {
     return <VideoInfo> await parsedInfo;
   }
 
-  async download(url: string, cancelPromise?: Promise<void>): Promise<void> {
-    if (cancelPromise) {
-      cancelPromise.catch(() => {});
-    }
+  download(url: string): DownloadRequest {
+    let cancel = () => {};
 
-    return await this.runInContainer('youtube-dl', [
+    // TODO: Is it OK that this promise may never be resolved/rejected,
+    // or will that cause a memory leak?
+    const cancelPromise = new Promise<void>((resolve) => {
+      cancel = resolve;
+    });
+
+    const promise = this.runInContainer('youtube-dl', [
       '--restrict-filenames',
       url,
     ], {
       containerCb(container) {
-        if (cancelPromise) {
-          cancelPromise.then(() => {
-            console.log(`Stopping download of ${url}.`);
-            container.stop({t: 1}, (err) => {
-              if (err) {
-                console.log('Error stopping container:', err);
-              }
-            });
+        cancelPromise.then(() => {
+          console.log(`Stopping download of ${url}.`);
+          container.stop({t: 1}, (err) => {
+            if (err) {
+              console.log('Error stopping container:', err);
+            }
           });
-        }
+        });
       }
     });
+
+    return {
+      promise: promise,
+      cancel,
+    };
   }
 }
