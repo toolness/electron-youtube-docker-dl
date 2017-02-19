@@ -26,8 +26,8 @@ export class StateDownloader {
 
     state.downloads.forEach(download => {
       if (download.state === 'preparing') {
-        console.log('Preparing', download.url);
         if (!this.videoInfoRequests.has(download.url)) {
+          console.log('Preparing', download.url);
           const promise = this.prepare(download);
           this.videoInfoRequests.set(download.url, promise);
           promise.then(info => {
