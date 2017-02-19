@@ -1,16 +1,16 @@
 type Releaser = () => void;
 
 export default class GlobalLock {
-  __lock?: Promise<void>;
+  private lock: Promise<void>;
 
   constructor() {
-    this.__lock = new Promise<void>(resolve => resolve());
+    this.lock = new Promise<void>(resolve => resolve());
   }
 
   async acquire(): Promise<Releaser> {
-    await this.__lock;
+    await this.lock;
     let resolver: Releaser = () => {};
-    this.__lock = new Promise<void>((resolve, reject) => {
+    this.lock = new Promise<void>((resolve, reject) => {
       resolver = resolve;
     });
     return resolver;
