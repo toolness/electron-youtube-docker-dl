@@ -5,6 +5,12 @@ import Docker = require('dockerode');
 import through2 = require('through2');
 import {COMMAND_FAILED} from './constants';
 
+const BASE_OPTIONS = [
+  '--restrict-filenames',
+  // Download best mp4 format available or any other best if no mp4 available
+  '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
+];
+
 export function convertWindowsPath(pathname: string) {
   return pathname.replace(
     /^([A-Z])\:\\/, (_, letter) => '/' + letter.toLowerCase() + '/'
@@ -124,11 +130,10 @@ export default class DockerizedDownloader {
       });
     });
 
-    await this.runInContainer('youtube-dl', [
-      '--restrict-filenames',
+    await this.runInContainer('youtube-dl', BASE_OPTIONS.concat([
       '--no-warnings',
       '-j', url
-    ], {
+    ]), {
       out: stream,
     });
 
@@ -148,11 +153,10 @@ export default class DockerizedDownloader {
 
     out.pipe(process.stdout);
 
-    const promise = this.runInContainer('youtube-dl', [
-      '--restrict-filenames',
+    const promise = this.runInContainer('youtube-dl', BASE_OPTIONS.concat([
       '--newline',
       url,
-    ], {
+    ]), {
       out,
       containerCb(container) {
         cancelPromise.then(() => {
