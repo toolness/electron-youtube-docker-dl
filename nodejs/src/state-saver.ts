@@ -24,13 +24,19 @@ export class StateSaver {
   middleware = (store: MiddlewareAPI<State>) =>
     (next: Dispatch<State>) =>
     (action: Action): Action => {
-      let result = next(action);
-      let contents = JSON.stringify(store.getState(), null, 2);
+      const prevState = store.getState();
+      const result = next(action);
+      const newState = store.getState();
 
-      // TODO: Make this asynchronous.
-      fs.writeFileSync(this.filename, contents, {encoding: 'utf-8'});
+      if (newState !== prevState) {
+        const contents = JSON.stringify(newState, null, 2);
 
-      console.log('wrote state', store.getState());
+        // TODO: Make this asynchronous.
+        fs.writeFileSync(this.filename, contents, {encoding: 'utf-8'});
+
+        console.log('wrote state', store.getState());
+      }
+
       return result;
   }
 }
