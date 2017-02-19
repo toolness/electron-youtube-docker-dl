@@ -5,8 +5,10 @@ import Docker = require('dockerode');
 import through2 = require('through2');
 import {COMMAND_FAILED} from './constants';
 
+// https://github.com/rg3/youtube-dl/blob/master/README.md#options
 const BASE_OPTIONS = [
   '--restrict-filenames',
+  '--no-playlist',
   // Download best mp4 format available or any other best if no mp4 available
   '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
 ];

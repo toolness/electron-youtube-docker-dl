@@ -6,21 +6,25 @@ interface BaseDownload {
   log: string[];
 }
 
-interface PreparingDownload extends BaseDownload {
+export interface PreparingDownload extends BaseDownload {
   state: 'preparing';
 }
 
-interface ErroredDownload extends BaseDownload {
+export interface ErroredDownload extends BaseDownload {
   state: 'errored';
   videoInfo?: VideoInfo;
 }
 
-interface PreparedDownload extends BaseDownload {
+export interface PreparedDownload extends BaseDownload {
   state: 'queued' | 'started' | 'finished';
   videoInfo: VideoInfo;
 }
 
-type Download = PreparingDownload | PreparedDownload | ErroredDownload;
+export type Download = (
+  PreparingDownload |
+  PreparedDownload |
+  ErroredDownload
+);
 
 export interface State {
   isActive: boolean;

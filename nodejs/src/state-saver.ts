@@ -26,6 +26,8 @@ export class StateSaver {
     (action: Action): Action => {
       let result = next(action);
       let contents = JSON.stringify(store.getState(), null, 2);
+
+      // TODO: Make this asynchronous.
       fs.writeFileSync(this.filename, contents, {encoding: 'utf-8'});
 
       console.log('wrote state', store.getState());
