@@ -46,6 +46,7 @@ export default class DockerMachinedDownloader extends DockerizedDownloader {
       await runInHost('docker-machine', ['active']);
     } catch (e) {
       if (e.message === COMMAND_FAILED) {
+        this.log(`Starting Docker machine ${this.machineName}.`);
         await runInHost('docker-machine', ['start', this.machineName]);
       } else throw e;
     }
@@ -54,6 +55,7 @@ export default class DockerMachinedDownloader extends DockerizedDownloader {
       await this.runInContainer('curl', ['http://youtube.com']);
     } catch (e) {
       if (e.message === COMMAND_FAILED) {
+        this.log(`Restarting Docker machine ${this.machineName}.`);
         await runInHost('docker-machine', ['restart', this.machineName]);
       } else throw e;
     }

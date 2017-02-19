@@ -62,12 +62,19 @@ export interface DownloadRequest {
   cancel(): void;
 }
 
-export default class DockerizedDownloader {
+interface DockerizedDownloader {
+  on(event: 'log', cb: (msg: string) => void): this;
+  emit(event: 'log', msg: string): boolean;
+}
+
+class DockerizedDownloader extends EventEmitter {
   docker: Docker;
   image: string;
   dir: string;
 
   constructor(options: DownloaderOptions) {
+    super();
+
     this.docker = options.docker;
     this.image = options.image;
     this.dir = path.resolve(options.dir);
@@ -140,7 +147,13 @@ export default class DockerizedDownloader {
     return <VideoInfo> await parsedInfo;
   }
 
+  log(msg: string): void {
+    console.log(msg);
+    this.emit('log', msg);
+  }
+
   download(url: string): DownloadRequest {
+    const self = this;
     let cancel = () => {};
 
     // TODO: Is it OK that this promise may never be resolved/rejected,
@@ -160,10 +173,11 @@ export default class DockerizedDownloader {
       out,
       containerCb(container) {
         cancelPromise.then(() => {
-          console.log(`Stopping download of ${url}.`);
+          self.log(`Stopping download of ${url}.`);
           container.stop({t: 1}, (err) => {
             if (err) {
-              console.log('Error stopping container:', err);
+              self.log('Error stopping container.');
+              console.log(err);
             }
           });
         });
@@ -177,3 +191,5 @@ export default class DockerizedDownloader {
     };
   }
 }
+
+export default DockerizedDownloader;
