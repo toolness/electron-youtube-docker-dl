@@ -47,6 +47,7 @@ export interface VideoInfo {
   height: number;
   fps: number;
   ext: string;
+  _filename: string;
 }
 
 export interface DownloadRequest {
