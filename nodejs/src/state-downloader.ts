@@ -4,7 +4,7 @@ import DockerizedDownloader from './downloader';
 import {stringifyError} from './util';
 import {VideoInfo} from './downloader';
 import {Action, downloadPrepared, downloadError, log} from './actions';
-import {State, PreparingDownload} from './state';
+import {State, Download, PreparingDownload} from './state';
 
 export class StateDownloader {
   readonly downloader: DockerizedDownloader;
@@ -21,10 +21,9 @@ export class StateDownloader {
     return await this.downloader.getVideoInfo(download.url);
   }
 
-  private prepareAll(store: MiddlewareAPI<State>): void {
-    const state = store.getState();
-
-    state.downloads.forEach(download => {
+  private prepareAll(downloads: Download[],
+                     dispatch: Dispatch<State>): void {
+    downloads.forEach(download => {
       if (download.state === 'preparing') {
         if (!this.videoInfoRequests.has(download.url)) {
           console.log('Preparing', download.url);
@@ -32,11 +31,11 @@ export class StateDownloader {
           this.videoInfoRequests.set(download.url, promise);
           promise.then(info => {
             this.videoInfoRequests.delete(download.url);
-            store.dispatch(downloadPrepared(download.url, info));
+            dispatch(downloadPrepared(download.url, info));
           }).catch(err => {
             this.videoInfoRequests.delete(download.url);
             const msg = `Fetching metadata failed: ${stringifyError(err)}`;
-            store.dispatch(downloadError(download.url, msg));
+            dispatch(downloadError(download.url, msg));
             console.log('Error preparing', download.url);
           });
         }
@@ -59,7 +58,7 @@ export class StateDownloader {
       }
 
       if (prevState.downloads !== newState.downloads) {
-        this.prepareAll(store);
+        this.prepareAll(newState.downloads, store.dispatch);
       }
 
       return result;
