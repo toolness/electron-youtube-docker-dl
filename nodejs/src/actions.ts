@@ -50,15 +50,6 @@ export function downloadPrepared(url: string,
 /**
  * Signal that an error occurred while trying to download.
  */
-export function downloadError(url: string,
-                              error: any): ErrorAction {
-  let message: string = 'Unknown error';
-
-  if (typeof(error) === 'string') {
-    message = error;
-  } else if (error && typeof(error.message) === 'string') {
-    message = error.message;
-  }
-
+export function downloadError(url: string, message: string): ErrorAction {
   return {type: 'downloadError', url, message};
 }

@@ -1,6 +1,7 @@
 import {MiddlewareAPI, Dispatch} from 'redux';
 
 import DockerizedDownloader from './downloader';
+import {stringifyError} from './util';
 import {VideoInfo} from './downloader';
 import {Action, downloadPrepared, downloadError} from './actions';
 import {State, PreparingDownload} from './state';
@@ -35,8 +36,9 @@ export class StateDownloader {
             this.videoInfoRequests.delete(download.url);
             store.dispatch(downloadPrepared(download.url, info));
           }).catch(err => {
-            store.dispatch(downloadError(download.url, err));
-            console.log('Error preparing', download.url, err);
+            const msg = `Fetching metadata failed: ${stringifyError(err)}`;
+            store.dispatch(downloadError(download.url, msg));
+            console.log('Error preparing', download.url);
           });
         }
       }
