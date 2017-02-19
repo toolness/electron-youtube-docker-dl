@@ -6,8 +6,6 @@ import {VideoInfo} from './downloader';
 import {Action, downloadPrepared, downloadError} from './actions';
 import {State, PreparingDownload} from './state';
 
-new Map<string, Promise<VideoInfo>>();
-
 export class StateDownloader {
   readonly downloader: DockerizedDownloader;
   private videoInfoRequests: Map<string, Promise<VideoInfo>>;
