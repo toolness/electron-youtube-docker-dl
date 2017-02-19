@@ -13,7 +13,7 @@ export function downloaderApp(state: State = initialState,
     return state;
   }
 
-  console.log(action.type);
+  console.log('Processing action', action.type);
 
   switch (action.type) {
     case 'enqueueDownload':
