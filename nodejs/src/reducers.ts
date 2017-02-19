@@ -1,15 +1,13 @@
-import {createStore} from 'redux';
-
 import {State} from './state';
 import * as actions from './actions';
 
-const initialState: State = {
+export const initialState: State = {
   isActive: true,
   downloads: []
 };
 
-function downloaderApp(state: State = initialState,
-                       action: actions.Action): State {
+export function downloaderApp(state: State = initialState,
+                              action: actions.Action): State {
   if (!state.isActive) {
     console.warn(`Action ${action.type} received while app is inactive.`);
     return state;
@@ -31,11 +29,6 @@ function downloaderApp(state: State = initialState,
         })
       });
   }
-}
 
-let store = createStore(downloaderApp);
-
-if (module.parent === null) {
-  // TODO: This is just sample code, remove it eventually.
-  store.dispatch(actions.enqueueDownload('http://boop'));
+  return state;
 }
