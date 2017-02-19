@@ -24,6 +24,8 @@ export function downloaderApp(state: State = initialState,
   console.log('Processing action', action.type);
 
   switch (action.type) {
+    case 'init':
+      return state;
     case 'log':
       return assign(state, {
         log: state.log.concat(action.message)
@@ -40,6 +42,19 @@ export function downloaderApp(state: State = initialState,
           log: []
         })
       });
+    case 'startDownload':
+      return assign(state, {
+        downloads: state.downloads.map(d => {
+          if (d.url === action.url && d.state === 'queued') {
+            const started: PreparedDownload = {
+              ...d,
+              state: 'started',
+            };
+            return started;
+          }
+          return d;
+        })
+      });
     case 'cancelDownload':
       return assign(state, {
         downloads: state.downloads.filter(d => {
@@ -50,12 +65,12 @@ export function downloaderApp(state: State = initialState,
       return assign(state, {
         downloads: state.downloads.map(d => {
           if (d.url === action.url) {
-            const prepared: PreparedDownload = {
+            const queued: PreparedDownload = {
               ...d,
               state: 'queued',
               videoInfo: action.videoInfo
             };
-            return prepared;
+            return queued;
           }
           return d;
         })

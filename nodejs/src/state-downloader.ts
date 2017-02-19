@@ -3,13 +3,14 @@ import {MiddlewareAPI, Dispatch} from 'redux';
 import DockerizedDownloader from './downloader';
 import {stringifyError} from './util';
 import {VideoInfo} from './downloader';
-import {Action, downloadPrepared, downloadError, log} from './actions';
+import {Action, downloadPrepared, downloadError, log,
+        startDownload} from './actions';
 import {State, Download, PreparingDownload} from './state';
 
 export class StateDownloader {
   readonly downloader: DockerizedDownloader;
   private videoInfoRequests = new Map<string, Promise<VideoInfo>>();
-  private loggingInitialized = false;
+  private downloadRequests = new Map<string, Promise<void>>();
 
   constructor(downloader: DockerizedDownloader) {
     this.downloader = downloader;
@@ -43,22 +44,41 @@ export class StateDownloader {
     });
   }
 
+  private startNextDownload(downloads: Download[],
+                            dispatch: Dispatch<State>): void {
+    for (let i = 0; i < downloads.length; i++) {
+      const d = downloads[i];
+      if (d.state === 'started') {
+        if (!this.downloadRequests.has(d.url)) {
+          console.log("TODO START", d.url);
+        }
+        return;
+      }
+      if (d.state === 'queued') {
+        dispatch(startDownload(d.url));
+        return;
+      }
+    }
+  }
+
   middleware = (store: MiddlewareAPI<State>) =>
     (next: Dispatch<State>) =>
     (action: Action): Action => {
       const prevState = store.getState();
       const result = next(action);
       const newState = store.getState();
+      let processDownloads = prevState.downloads !== newState.downloads;
 
-      if (!this.loggingInitialized) {
+      if (action.type === 'init') {
         this.downloader.on('log', message => {
           store.dispatch(log(message));
         });
-        this.loggingInitialized = true;
+        processDownloads = true;
       }
 
-      if (prevState.downloads !== newState.downloads) {
+      if (processDownloads) {
         this.prepareAll(newState.downloads, store.dispatch);
+        this.startNextDownload(newState.downloads, store.dispatch);
       }
 
       return result;

@@ -34,6 +34,8 @@ app.on('ready', () => {
 
   win.webContents.openDevTools();
 
+  store.dispatch(actions.init());
+
   // TODO: This is just sample code, remove it eventually.
   store.dispatch(actions.enqueueDownload('http://boop'));
   store.dispatch(actions.enqueueDownload('https://www.youtube.com/watch?v=y7afWRBNXwQ'));
