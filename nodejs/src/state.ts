@@ -27,7 +27,6 @@ export type Download = (
 );
 
 export interface State {
-  isActive: boolean;
   log: string[];
   downloads: Download[];
 }

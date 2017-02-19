@@ -2,7 +2,6 @@ import {State, PreparedDownload, ErroredDownload} from './state';
 import * as actions from './actions';
 
 export const initialState: State = {
-  isActive: true,
   log: [],
   downloads: []
 };
@@ -24,11 +23,6 @@ function assign<T>(original: T, changes: Partial<T>): T {
  * to see if the return value is falsy.
  */
 function app(state: State, action: actions.Action): State {
-  if (!state.isActive) {
-    console.warn(`Action ${action.type} received while app is inactive.`);
-    return state;
-  }
-
   console.log('Processing action', action.type);
 
   switch (action.type) {
