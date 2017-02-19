@@ -34,6 +34,7 @@ export class StateDownloader {
             this.videoInfoRequests.delete(download.url);
             store.dispatch(downloadPrepared(download.url, info));
           }).catch(err => {
+            this.videoInfoRequests.delete(download.url);
             const msg = `Fetching metadata failed: ${stringifyError(err)}`;
             store.dispatch(downloadError(download.url, msg));
             console.log('Error preparing', download.url);
