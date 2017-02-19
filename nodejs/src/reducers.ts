@@ -35,10 +35,12 @@ function app(state: State, action: actions.Action): State {
     case '@@redux/INIT':
     case 'init':
       return state;
+
     case 'log':
       return assign(state, {
         log: state.log.concat(action.message)
       });
+
     case 'enqueueDownload':
       if (state.downloads.some(d => d.url === action.url)) {
         console.log(`Not enqueuing ${action.url}, it already exists.`);
@@ -51,6 +53,7 @@ function app(state: State, action: actions.Action): State {
           log: []
         })
       });
+
     case 'startDownload':
       return assign(state, {
         downloads: state.downloads.map(d => {
@@ -64,6 +67,7 @@ function app(state: State, action: actions.Action): State {
           return d;
         })
       });
+
     case 'finishDownload':
       return assign(state, {
         downloads: state.downloads.map(d => {
@@ -77,12 +81,14 @@ function app(state: State, action: actions.Action): State {
           return d;
         })
       });
+
     case 'cancelDownload':
       return assign(state, {
         downloads: state.downloads.filter(d => {
           return d.url !== action.url;
         })
       });
+
     case 'downloadPrepared':
       return assign(state, {
         downloads: state.downloads.map(d => {
@@ -97,6 +103,7 @@ function app(state: State, action: actions.Action): State {
           return d;
         })
       });
+
     case 'downloadError':
       return assign(state, {
         downloads: state.downloads.map(d => {
