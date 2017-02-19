@@ -6,7 +6,8 @@ interface LogAction {
 }
 
 interface SimpleUrlAction {
-  type: 'enqueueDownload' | 'startDownload' | 'cancelDownload';
+  type: 'enqueueDownload' | 'startDownload' | 'finishDownload' |
+        'cancelDownload';
   url: string;
 }
 
@@ -57,6 +58,13 @@ export function enqueueDownload(url: string): SimpleUrlAction {
  */
 export function startDownload(url: string): SimpleUrlAction {
   return {type: 'startDownload', url};
+}
+
+/**
+ * Successfully finish a download.
+ */
+export function finishDownload(url: string): SimpleUrlAction {
+  return {type: 'finishDownload', url};
 }
 
 /**

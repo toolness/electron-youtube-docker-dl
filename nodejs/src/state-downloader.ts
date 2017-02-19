@@ -4,8 +4,9 @@ import DockerizedDownloader from './downloader';
 import {stringifyError} from './util';
 import {VideoInfo} from './downloader';
 import {Action, downloadPrepared, downloadError, log,
-        startDownload} from './actions';
-import {State, Download, PreparingDownload} from './state';
+        startDownload, finishDownload} from './actions';
+import {State, Download, PreparingDownload,
+        PreparedDownload} from './state';
 
 export class StateDownloader {
   readonly downloader: DockerizedDownloader;
@@ -44,13 +45,33 @@ export class StateDownloader {
     });
   }
 
+  private async download(download: PreparedDownload): Promise<void> {
+    await this.downloader.prepareHost();
+
+    const req = this.downloader.download(download.url);
+
+    // TODO: stream the output to the download's log.
+
+    await req.promise;
+  }
+
   private startNextDownload(downloads: Download[],
                             dispatch: Dispatch<State>): void {
     for (let i = 0; i < downloads.length; i++) {
       const d = downloads[i];
       if (d.state === 'started') {
         if (!this.downloadRequests.has(d.url)) {
-          console.log("TODO START", d.url);
+          const promise = this.download(d);
+          this.downloadRequests.set(d.url, promise);
+          promise.then(() => {
+            this.downloadRequests.delete(d.url);
+            dispatch(finishDownload(d.url));
+          }).catch(err => {
+            this.downloadRequests.delete(d.url);
+            const msg = `Downloading failed: ${stringifyError(err)}`;
+            dispatch(downloadError(d.url, msg));
+            console.log('Error downloading', d.url);
+          });
         }
         return;
       }

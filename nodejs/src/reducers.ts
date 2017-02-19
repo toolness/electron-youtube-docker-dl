@@ -55,6 +55,19 @@ export function downloaderApp(state: State = initialState,
           return d;
         })
       });
+    case 'finishDownload':
+      return assign(state, {
+        downloads: state.downloads.map(d => {
+          if (d.url === action.url && d.state === 'started') {
+            const finished: PreparedDownload = {
+              ...d,
+              state: 'finished',
+            };
+            return finished;
+          }
+          return d;
+        })
+      });
     case 'cancelDownload':
       return assign(state, {
         downloads: state.downloads.filter(d => {
