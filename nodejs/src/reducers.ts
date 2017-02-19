@@ -14,8 +14,16 @@ function assign<T>(original: T, changes: Partial<T>): T {
   return Object.assign({}, original, changes);
 }
 
-export function downloaderApp(state: State = initialState,
-                              action: actions.Action): State {
+/**
+ * Reducer that relies on TypeScript's control flow analysis to
+ * ensure that all possible actions are handled.
+ *
+ * However, there is a chance that undocumented actions from
+ * third-party libraries might interfere with this, so this
+ * function should be wrapped by another function that tests
+ * to see if the return value is falsy.
+ */
+function app(state: State, action: actions.Action): State {
   if (!state.isActive) {
     console.warn(`Action ${action.type} received while app is inactive.`);
     return state;
@@ -24,6 +32,7 @@ export function downloaderApp(state: State = initialState,
   console.log('Processing action', action.type);
 
   switch (action.type) {
+    case '@@redux/INIT':
     case 'init':
       return state;
     case 'log':
@@ -103,6 +112,16 @@ export function downloaderApp(state: State = initialState,
         })
       });
   }
+}
 
-  return state;
+export function downloaderApp(state: State = initialState,
+                              action: actions.Action): State {
+  const newState = app(state, action);
+
+  if (!newState) {
+    console.warn('Unexpected/undocumented action', action);
+    return state;
+  }
+
+  return newState;
 }

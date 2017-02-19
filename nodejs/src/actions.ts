@@ -25,6 +25,7 @@ interface ErrorAction {
 
 export type Action = (
   {type: 'init'} |
+  {type: '@@redux/INIT'} |
   LogAction |
   SimpleUrlAction |
   PreparedAction |
