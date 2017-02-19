@@ -144,6 +144,7 @@ export default class DockerizedDownloader {
 
     const promise = this.runInContainer('youtube-dl', [
       '--restrict-filenames',
+      '--newline',
       url,
     ], {
       containerCb(container) {
