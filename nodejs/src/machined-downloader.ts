@@ -34,7 +34,7 @@ interface MachinedDownloaderOptions extends DownloaderOptions {
 }
 
 export default class DockerMachinedDownloader extends DockerizedDownloader {
-  machineName: string;
+  readonly machineName: string;
 
   constructor(options: MachinedDownloaderOptions) {
     super(options);

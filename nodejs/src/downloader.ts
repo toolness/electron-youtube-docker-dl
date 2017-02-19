@@ -68,9 +68,9 @@ interface DockerizedDownloader {
 }
 
 class DockerizedDownloader extends EventEmitter {
-  docker: Docker;
-  image: string;
-  dir: string;
+  readonly docker: Docker;
+  readonly image: string;
+  readonly dir: string;
 
   constructor(options: DownloaderOptions) {
     super();
