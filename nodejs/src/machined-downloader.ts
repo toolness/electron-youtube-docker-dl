@@ -3,7 +3,10 @@ import {spawn} from 'child_process';
 
 import DockerizedDownloader from './downloader';
 import {DownloaderOptions, RunOptions} from './downloader';
+import GlobalLock from './global-lock';
 import {COMMAND_FAILED} from './constants';
+
+const lock = new GlobalLock();
 
 function resolveDns(hostname: string) {
   return new Promise((resolve, reject) => {
@@ -42,22 +45,28 @@ export default class DockerMachinedDownloader extends DockerizedDownloader {
   }
 
   async prepareHost(): Promise<void> {
+    let release = await lock.acquire();
+
     try {
-      await runInHost('docker-machine', ['active']);
-    } catch (e) {
-      if (e.message === COMMAND_FAILED) {
-        this.log(`Starting Docker machine ${this.machineName}.`);
-        await runInHost('docker-machine', ['start', this.machineName]);
-      } else throw e;
-    }
-    await resolveDns('youtube.com');
-    try {
-      await this.runInContainer('curl', ['http://youtube.com']);
-    } catch (e) {
-      if (e.message === COMMAND_FAILED) {
-        this.log(`Restarting Docker machine ${this.machineName}.`);
-        await runInHost('docker-machine', ['restart', this.machineName]);
-      } else throw e;
+      try {
+        await runInHost('docker-machine', ['active']);
+      } catch (e) {
+        if (e.message === COMMAND_FAILED) {
+          this.log(`Starting Docker machine ${this.machineName}.`);
+          await runInHost('docker-machine', ['start', this.machineName]);
+        } else throw e;
+      }
+      await resolveDns('youtube.com');
+      try {
+        await this.runInContainer('curl', ['http://youtube.com']);
+      } catch (e) {
+        if (e.message === COMMAND_FAILED) {
+          this.log(`Restarting Docker machine ${this.machineName}.`);
+          await runInHost('docker-machine', ['restart', this.machineName]);
+        } else throw e;
+      }
+    } finally {
+      release();
     }
   }
 }
