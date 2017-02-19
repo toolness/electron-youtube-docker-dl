@@ -3,6 +3,7 @@ import * as actions from './actions';
 
 export const initialState: State = {
   isActive: true,
+  log: [],
   downloads: []
 };
 
@@ -23,6 +24,10 @@ export function downloaderApp(state: State = initialState,
   console.log('Processing action', action.type);
 
   switch (action.type) {
+    case 'log':
+      return assign(state, {
+        log: state.log.concat(action.message)
+      });
     case 'enqueueDownload':
       if (state.downloads.some(d => d.url === action.url)) {
         console.log(`Not enqueuing ${action.url}, it already exists.`);

@@ -1,5 +1,10 @@
 import {VideoInfo} from './downloader';
 
+interface LogAction {
+  type: 'log';
+  message: string;
+}
+
 interface SimpleUrlAction {
   type: 'enqueueDownload' | 'cancelDownload';
   url: string;
@@ -18,10 +23,18 @@ interface ErrorAction {
 }
 
 export type Action = (
+  LogAction |
   SimpleUrlAction |
   PreparedAction |
   ErrorAction
 );
+
+/**
+ * Log a generic message that isn't specific to a particular download.
+ */
+export function log(message: string): LogAction {
+  return {type: 'log', message};
+}
 
 /**
  * Enqueue a video for being downloaded, adding it to the

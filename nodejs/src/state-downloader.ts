@@ -3,16 +3,16 @@ import {MiddlewareAPI, Dispatch} from 'redux';
 import DockerizedDownloader from './downloader';
 import {stringifyError} from './util';
 import {VideoInfo} from './downloader';
-import {Action, downloadPrepared, downloadError} from './actions';
+import {Action, downloadPrepared, downloadError, log} from './actions';
 import {State, PreparingDownload} from './state';
 
 export class StateDownloader {
   readonly downloader: DockerizedDownloader;
-  private videoInfoRequests: Map<string, Promise<VideoInfo>>;
+  private videoInfoRequests = new Map<string, Promise<VideoInfo>>();
+  private loggingInitialized = false;
 
   constructor(downloader: DockerizedDownloader) {
     this.downloader = downloader;
-    this.videoInfoRequests = new Map();
   }
 
   private async prepare(download: PreparingDownload): Promise<VideoInfo> {
@@ -47,6 +47,13 @@ export class StateDownloader {
     (next: Dispatch<State>) =>
     (action: Action): Action => {
       const result = next(action);
+
+      if (!this.loggingInitialized) {
+        this.downloader.on('log', message => {
+          store.dispatch(log(message));
+        });
+        this.loggingInitialized = true;
+      }
 
       this.prepareAll(store);
 
