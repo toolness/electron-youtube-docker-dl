@@ -47,7 +47,9 @@ export class StateDownloader {
   middleware = (store: MiddlewareAPI<State>) =>
     (next: Dispatch<State>) =>
     (action: Action): Action => {
+      const prevState = store.getState();
       const result = next(action);
+      const newState = store.getState();
 
       if (!this.loggingInitialized) {
         this.downloader.on('log', message => {
@@ -56,7 +58,9 @@ export class StateDownloader {
         this.loggingInitialized = true;
       }
 
-      this.prepareAll(store);
+      if (prevState.downloads !== newState.downloads) {
+        this.prepareAll(store);
+      }
 
       return result;
   }
