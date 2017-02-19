@@ -1,6 +1,7 @@
 import {MiddlewareAPI, Dispatch} from 'redux';
 
 import DockerizedDownloader from './downloader';
+import {DownloadRequest} from './downloader';
 import {stringifyError} from './util';
 import {VideoInfo} from './downloader';
 import {Action, downloadPrepared, downloadError, log,
@@ -11,7 +12,7 @@ import {State, Download, PreparingDownload,
 export class StateDownloader {
   readonly downloader: DockerizedDownloader;
   private videoInfoRequests = new Map<string, Promise<VideoInfo>>();
-  private downloadRequests = new Map<string, Promise<void>>();
+  private downloadRequests = new Map<string, Promise<DownloadRequest>>();
 
   constructor(downloader: DockerizedDownloader) {
     this.downloader = downloader;
@@ -45,14 +46,10 @@ export class StateDownloader {
     });
   }
 
-  private async download(download: PreparedDownload): Promise<void> {
+  private async download(download: PreparedDownload): Promise<DownloadRequest> {
     await this.downloader.prepareHost();
 
-    const req = this.downloader.download(download.url);
-
-    // TODO: stream the output to the download's log.
-
-    await req.promise;
+    return this.downloader.download(download.url);
   }
 
   private startNextDownload(downloads: Download[],
@@ -63,15 +60,21 @@ export class StateDownloader {
         if (!this.downloadRequests.has(d.url)) {
           const promise = this.download(d);
           this.downloadRequests.set(d.url, promise);
-          promise.then(() => {
-            this.downloadRequests.delete(d.url);
-            dispatch(finishDownload(d.url));
-          }).catch(err => {
+
+          const reportError = (err: any): void => {
             this.downloadRequests.delete(d.url);
             const msg = `Downloading failed: ${stringifyError(err)}`;
             dispatch(downloadError(d.url, msg));
             console.log('Error downloading', d.url);
-          });
+          };
+
+          promise.then((req) => {
+            // TODO: Send output of request to download log.
+            req.promise.then(() => {
+              this.downloadRequests.delete(d.url);
+              dispatch(finishDownload(d.url));
+            }).catch(reportError);
+          }).catch(reportError);
         }
         return;
       }
