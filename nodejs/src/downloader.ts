@@ -1,5 +1,5 @@
 import * as path from 'path';
-import {Stream} from 'stream';
+import {Stream, Transform, PassThrough} from 'stream';
 import {EventEmitter} from 'events';
 import Docker = require('dockerode');
 import through2 = require('through2');
@@ -51,6 +51,7 @@ export interface VideoInfo {
 
 export interface DownloadRequest {
   promise: Promise<void>;
+  out: Transform;
   cancel(): void;
 }
 
@@ -142,11 +143,16 @@ export default class DockerizedDownloader {
       cancel = resolve;
     });
 
+    const out = new PassThrough();
+
+    out.pipe(process.stdout);
+
     const promise = this.runInContainer('youtube-dl', [
       '--restrict-filenames',
       '--newline',
       url,
     ], {
+      out,
       containerCb(container) {
         cancelPromise.then(() => {
           console.log(`Stopping download of ${url}.`);
@@ -161,6 +167,7 @@ export default class DockerizedDownloader {
 
     return {
       promise: promise,
+      out: out,
       cancel,
     };
   }
