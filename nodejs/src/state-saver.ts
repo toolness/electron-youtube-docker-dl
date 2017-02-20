@@ -33,8 +33,6 @@ export class StateSaver {
 
         // TODO: Make this asynchronous.
         fs.writeFileSync(this.filename, contents, {encoding: 'utf-8'});
-
-        console.log('wrote state', store.getState());
       }
 
       return result;
