@@ -1,5 +1,8 @@
 import {MiddlewareAPI, Dispatch} from 'redux';
+import * as path from 'path';
+import * as fs from 'fs';
 
+import {DOWNLOAD_DIR} from './constants';
 import DockerizedDownloader from './downloader';
 import {DownloadRequest} from './downloader';
 import {stringifyError} from './util';
@@ -85,10 +88,36 @@ export class StateDownloader {
     }
   }
 
+  private handleCancel(url: string, downloads: Download[]) {
+    downloads.forEach(d => {
+      if (d.url === url) {
+        if (d.state === 'started') {
+          const promise = this.downloadRequests.get(url);
+          if (promise) {
+            console.log('Scheduling cancellation of download', url);
+            promise.then(req => { req.cancel(); });
+          }
+        } else if (d.state === 'finished') {
+          const filePath = path.join(DOWNLOAD_DIR, d.videoInfo._filename);
+          console.log('Checking for existence of', filePath);
+          if (fs.existsSync(filePath)) {
+            console.log('File exists, removing it.');
+            fs.unlinkSync(filePath);
+          }
+        }
+      }
+    });
+  }
+
   middleware = (store: MiddlewareAPI<State>) =>
     (next: Dispatch<State>) =>
     (action: Action): Action => {
       const prevState = store.getState();
+
+      if (action.type === 'cancelDownload') {
+        this.handleCancel(action.url, prevState.downloads);
+      }
+
       const result = next(action);
       const newState = store.getState();
       let processDownloads = prevState.downloads !== newState.downloads;
