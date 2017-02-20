@@ -1,6 +1,11 @@
 import React = require('react');
 import ReactDOM = require('react-dom');
 import {ipcRenderer} from 'electron';
+import {createStore} from 'redux';
+
+import {State} from '../state';
+import * as actions from '../actions';
+import {downloaderApp} from '../reducers';
 
 interface AppProps {
 }
@@ -19,7 +24,7 @@ class App extends React.Component<AppProps, AppState> {
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    ipcRenderer.send('download', this.state.url);
+    ipcRenderer.send('action', actions.enqueueDownload(this.state.url));
     this.setState({
       url: '',
     });
@@ -45,7 +50,17 @@ class App extends React.Component<AppProps, AppState> {
   }
 }
 
-ReactDOM.render(
-  <App/>,
-  document.getElementById('app')
-);
+ipcRenderer.on('currentState', (event, state: State) => {
+  const store = createStore<State>(downloaderApp, state);
+  console.log('wooot hello', state);
+
+  ipcRenderer.on('action', (event, action: actions.Action) => {
+    store.dispatch(action);
+    console.log('got action', action, store.getState());
+  });
+
+  ReactDOM.render(
+    <App/>,
+    document.getElementById('app')
+  );
+});
