@@ -77,6 +77,11 @@ class DownloadListItem extends React.Component<Props, State> {
         <code>{d.state}</code>
         <br/>
         <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
+        <br/>
+        <details>
+          <summary>Output</summary>
+          <pre>{d.log.map(s => <span>{s}</span>)}</pre>
+        </details>
         <ul>
           {showInFinderBtn}
           {retryBtn}
