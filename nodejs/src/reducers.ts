@@ -36,6 +36,19 @@ function app(state: State, action: actions.Action): State {
         log: state.log.concat(action.message)
       });
 
+    case 'urllog':
+      return assign(state, {
+        downloads: state.downloads.map(d => {
+          if (d.url === action.url) {
+            return {
+              ...d,
+              log: d.log.concat(action.message)
+            };
+          }
+          return d;
+        })
+      });
+
     case 'enqueueDownload':
       if (state.downloads.some(d => d.url === action.url)) {
         console.log(`Not enqueuing ${action.url}, it already exists.`);
@@ -129,7 +142,7 @@ function app(state: State, action: actions.Action): State {
             const errored: ErroredDownload = {
               ...d,
               state: 'errored',
-              log: d.log.concat(action.message)
+              log: d.log.concat(action.message + '\n')
             };
             return errored;
           }

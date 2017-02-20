@@ -1,6 +1,7 @@
 import {MiddlewareAPI, Dispatch} from 'redux';
 import * as path from 'path';
 import * as fs from 'fs';
+import through2 = require('through2');
 
 import {DOWNLOAD_DIR} from './constants';
 import DockerizedDownloader from './downloader';
@@ -8,7 +9,7 @@ import {DownloadRequest} from './downloader';
 import {stringifyError} from './util';
 import {VideoInfo} from './downloader';
 import {Action, downloadPrepared, downloadError, log,
-        startDownload, finishDownload} from './actions';
+        startDownload, finishDownload, downloadLog} from './actions';
 import {State, Download, PreparingDownload,
         PreparedDownload} from './state';
 
@@ -72,7 +73,10 @@ export class StateDownloader {
           };
 
           promise.then((req) => {
-            // TODO: Send output of request to download log.
+            req.out.pipe(through2((chunk, enc, callback) => {
+              dispatch(downloadLog(d.url, chunk.toString('ascii')));
+              callback();
+            }));
             req.promise.then(() => {
               this.downloadRequests.delete(d.url);
               dispatch(finishDownload(d.url));
@@ -124,7 +128,7 @@ export class StateDownloader {
 
       if (action.type === 'init') {
         this.downloader.on('log', message => {
-          store.dispatch(log(message));
+          store.dispatch(log(message + '\n'));
         });
         processDownloads = true;
       }

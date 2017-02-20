@@ -21,6 +21,12 @@ interface SimpleUrlAction extends SyncableAction {
   url: string;
 }
 
+interface UrlLogAction extends SyncableAction {
+  type: 'urllog';
+  url: string;
+  message: string;
+}
+
 interface PreparedAction extends SyncableAction {
   type: 'downloadPrepared';
   url: string;
@@ -38,6 +44,7 @@ export type Action = (
   {type: '@@redux/INIT', origin?: undefined} |
   LogAction |
   SimpleUrlAction |
+  UrlLogAction |
   PreparedAction |
   ErrorAction
 );
@@ -61,6 +68,13 @@ export function init(): Action {
  */
 export function log(message: string): LogAction {
   return {type: 'log', message};
+}
+
+/**
+ * Log a message that is specific to a particular download.
+ */
+export function downloadLog(url: string, message: string): UrlLogAction {
+  return {type: 'urllog', url, message};
 }
 
 /**
