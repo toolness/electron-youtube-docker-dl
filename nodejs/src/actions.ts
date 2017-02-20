@@ -17,7 +17,7 @@ interface LogAction extends SyncableAction {
 
 interface SimpleUrlAction extends SyncableAction {
   type: 'enqueueDownload' | 'startDownload' | 'finishDownload' |
-        'cancelDownload';
+        'cancelDownload' | 'retryDownload';
   url: string;
 }
 
@@ -92,6 +92,13 @@ export function finishDownload(url: string): SimpleUrlAction {
  */
 export function cancelDownload(url: string): SimpleUrlAction {
   return {type: 'cancelDownload', url};
+}
+
+/**
+ * Retry a download that errored.
+ */
+export function retryDownload(url: string): SimpleUrlAction {
+  return {type: 'retryDownload', url};
 }
 
 /**

@@ -13,6 +13,7 @@ interface StateProps {}
 
 interface DispatchProps {
   cancel: () => void;
+  retry: () => void;
 }
 
 interface OwnProps {
@@ -40,6 +41,7 @@ class DownloadListItem extends React.Component<Props, State> {
     const d = this.props.download;
     let name = d.url;
     let showInFinderBtn = null;
+    let retryBtn = null;
     const cancelOrDeleteBtn = (
       <li>
         <button onClick={this.props.cancel}>
@@ -50,6 +52,14 @@ class DownloadListItem extends React.Component<Props, State> {
 
     if (d.videoInfo) {
       name = d.videoInfo.title;
+    }
+
+    if (d.state === 'errored') {
+      retryBtn = (
+        <li>
+          <button onClick={this.props.retry}>Retry</button>
+        </li>
+      );
     }
 
     if (d.state === 'finished') {
@@ -69,6 +79,7 @@ class DownloadListItem extends React.Component<Props, State> {
         <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
         <ol>
           {showInFinderBtn}
+          {retryBtn}
           {cancelOrDeleteBtn}
         </ol>
       </li>
@@ -80,6 +91,7 @@ export default connect<StateProps, DispatchProps, OwnProps>(
   (state: reduxState.State): StateProps => ({}),
 
   (dispatch: Dispatch<reduxState.State>, ownProps: OwnProps): DispatchProps => ({
-    cancel: () => dispatch(actions.cancelDownload(ownProps.download.url))
+    cancel: () => dispatch(actions.cancelDownload(ownProps.download.url)),
+    retry: () => dispatch(actions.retryDownload(ownProps.download.url))
   }),
 )(DownloadListItem);

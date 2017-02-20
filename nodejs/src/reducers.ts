@@ -1,4 +1,5 @@
-import {State, PreparedDownload, ErroredDownload} from './state';
+import {State, PreparedDownload, ErroredDownload,
+        PreparingDownload} from './state';
 import * as actions from './actions';
 
 export const initialState: State = {
@@ -80,6 +81,29 @@ function app(state: State, action: actions.Action): State {
       return assign(state, {
         downloads: state.downloads.filter(d => {
           return d.url !== action.url;
+        })
+      });
+
+    case 'retryDownload':
+      return assign(state, {
+        downloads: state.downloads.map(d => {
+          if (d.url === action.url && d.state === 'errored') {
+            if (d.videoInfo) {
+              const queued: PreparedDownload = {
+                ...d,
+                state: 'queued',
+                videoInfo: d.videoInfo,
+              };
+              return queued;
+            } else {
+              const preparing: PreparingDownload = {
+                ...d,
+                state: 'preparing'
+              };
+              return preparing;
+            }
+          }
+          return d;
         })
       });
 
