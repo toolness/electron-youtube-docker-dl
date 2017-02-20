@@ -16,13 +16,14 @@ const rootDir = path.normalize(path.join(__dirname, '..', '..'));
 
 const stateSaver = new StateSaver(path.join(rootDir, 'state.json'));
 const stateDownloader = new StateDownloader(getDownloader());
-const echoActionsToWindowMiddleware =
+const syncActionsToWindowMiddleware =
   (store: MiddlewareAPI<State>) =>
   (next: Dispatch<State>) =>
   (action: actions.Action): actions.Action => {
     const result = next(action);
 
-    if (win && !win.webContents.isLoading()) {
+    if (win && !win.webContents.isLoading() &&
+        action.origin !== 'renderer') {
       win.webContents.send('action', action);
     }
 
@@ -35,7 +36,7 @@ const store = createStore<State>(
   applyMiddleware(
     stateSaver.middleware,
     stateDownloader.middleware,
-    echoActionsToWindowMiddleware
+    syncActionsToWindowMiddleware
   )
 );
 
@@ -53,6 +54,8 @@ app.on('ready', () => {
 
   win.webContents.openDevTools();
 
+  store.dispatch(actions.init());
+
   win.webContents.on('did-finish-load', () => {
     if (win) {
       win.webContents.send('currentState', store.getState());
@@ -61,8 +64,6 @@ app.on('ready', () => {
   win.on('closed', () => {
     win = null;
   });
-
-  store.dispatch(actions.init());
 
   // TODO: This is just sample code, remove it eventually.
   store.dispatch(actions.enqueueDownload('http://boop'));
@@ -74,7 +75,8 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-ipcMain.on('action', (event, action: actions.Action) => {
+ipcMain.on('action', (event, action: actions.SyncableAction) => {
+  action.origin = 'renderer';
   console.log('got action from renderer', action);
   store.dispatch(action);
 });

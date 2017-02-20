@@ -1,31 +1,36 @@
 import {VideoInfo} from './downloader';
 
-interface LogAction {
+export interface SyncableAction {
+  type: string;
+  origin?: 'renderer' | 'main';
+}
+
+interface LogAction extends SyncableAction {
   type: 'log';
   message: string;
 }
 
-interface SimpleUrlAction {
+interface SimpleUrlAction extends SyncableAction {
   type: 'enqueueDownload' | 'startDownload' | 'finishDownload' |
         'cancelDownload';
   url: string;
 }
 
-interface PreparedAction {
+interface PreparedAction extends SyncableAction {
   type: 'downloadPrepared';
   url: string;
   videoInfo: VideoInfo;
 }
 
-interface ErrorAction {
+interface ErrorAction extends SyncableAction {
   type: 'downloadError';
   url: string;
   message: string;
 }
 
 export type Action = (
-  {type: 'init'} |
-  {type: '@@redux/INIT'} |
+  {type: 'init', origin?: undefined} |
+  {type: '@@redux/INIT', origin?: undefined} |
   LogAction |
   SimpleUrlAction |
   PreparedAction |

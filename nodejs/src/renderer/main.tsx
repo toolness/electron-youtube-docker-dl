@@ -1,13 +1,15 @@
 import React = require('react');
 import ReactDOM = require('react-dom');
 import {ipcRenderer} from 'electron';
-import {createStore} from 'redux';
+import {createStore, applyMiddleware,
+        MiddlewareAPI, Dispatch} from 'redux';
 
 import {State} from '../state';
 import * as actions from '../actions';
 import {downloaderApp} from '../reducers';
 
 interface AppProps {
+  dispatch: Dispatch<State>;
 }
 
 interface AppState {
@@ -24,7 +26,7 @@ class App extends React.Component<AppProps, AppState> {
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    ipcRenderer.send('action', actions.enqueueDownload(this.state.url));
+    this.props.dispatch(actions.enqueueDownload(this.state.url));
     this.setState({
       url: '',
     });
@@ -51,16 +53,33 @@ class App extends React.Component<AppProps, AppState> {
 }
 
 ipcRenderer.on('currentState', (event, state: State) => {
-  const store = createStore<State>(downloaderApp, state);
+  const syncActionsToMainMiddleware =
+    (store: MiddlewareAPI<State>) =>
+    (next: Dispatch<State>) =>
+    (action: actions.Action): actions.Action => {
+      const result = next(action);
+
+      if (action.origin !== 'main') {
+        ipcRenderer.send('action', action);
+      }
+
+      return result;
+  };
+  const store = createStore<State>(
+    downloaderApp,
+    state,
+    applyMiddleware(syncActionsToMainMiddleware)
+  );
   console.log('wooot hello', state);
 
-  ipcRenderer.on('action', (event, action: actions.Action) => {
+  ipcRenderer.on('action', (event, action: actions.SyncableAction) => {
+    action.origin = 'main';
     store.dispatch(action);
     console.log('got action', action, store.getState());
   });
 
   ReactDOM.render(
-    <App/>,
+    <App dispatch={store.dispatch}/>,
     document.getElementById('app')
   );
 });
