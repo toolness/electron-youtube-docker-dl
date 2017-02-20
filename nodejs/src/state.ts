@@ -4,6 +4,7 @@ interface BaseDownload {
   state: string;
   url: string;
   log: string[];
+  videoInfo?: VideoInfo;
 }
 
 export interface PreparingDownload extends BaseDownload {
@@ -12,7 +13,6 @@ export interface PreparingDownload extends BaseDownload {
 
 export interface ErroredDownload extends BaseDownload {
   state: 'errored';
-  videoInfo?: VideoInfo;
 }
 
 export interface PreparedDownload extends BaseDownload {

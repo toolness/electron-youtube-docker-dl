@@ -3,7 +3,7 @@ import {Dispatch} from 'redux';
 import {connect} from 'react-redux';
 
 import * as reduxState from '../state';
-import DownloadForm from './download-form';
+import DownloadListItem from './download-list-item';
 
 interface StateProps {
   downloads: reduxState.Download[],
@@ -22,7 +22,7 @@ class DownloadList extends React.Component<Props, State> {
     return (
       <ol>
         {this.props.downloads.map(d =>
-          <li key={d.url}><code>{d.state}</code> {d.url}</li>
+          <DownloadListItem key={d.url} download={d} />
         )}
       </ol>
     );

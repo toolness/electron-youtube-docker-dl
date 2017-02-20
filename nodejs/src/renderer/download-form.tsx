@@ -1,5 +1,5 @@
 import React = require('react');
-import * as Redux from 'redux';
+import {Dispatch} from 'redux';
 import {connect} from 'react-redux';
 
 import * as actions from '../actions';
@@ -58,7 +58,7 @@ class DownloadForm extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, OwnProps>(
   (state: reduxState.State): StateProps => ({}),
 
-  (dispatch: Redux.Dispatch<reduxState.State>): DispatchProps => ({
+  (dispatch: Dispatch<reduxState.State>): DispatchProps => ({
     enqueueDownload: (url: string) => dispatch(actions.enqueueDownload(url)),
   }),
 )(DownloadForm);

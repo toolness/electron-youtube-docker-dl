@@ -3,11 +3,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Docker = require('dockerode');
 
+import {DOWNLOAD_DIR} from './constants';
 import DockerMachinedDownloader from './machined-downloader';
 import DockerizedDownloader from './downloader';
 
 const IMAGE_NAME = 'youtubedldockerized_app';
-const DOWNLOAD_DIR = path.join(__dirname, '..', '..', 'downloads');
 
 function getDockerMachinedDownloader(): DockerMachinedDownloader {
   const DOCKER_CERT_PATH = process.env['DOCKER_CERT_PATH'];
