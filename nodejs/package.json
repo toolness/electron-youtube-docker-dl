@@ -10,6 +10,7 @@
     "@types/node": "^7.0.5",
     "@types/react": "^15.0.9",
     "@types/react-dom": "^0.14.23",
+    "@types/react-redux": "^4.4.36",
     "@types/through2": "^2.0.32",
     "dockerode": "^2.3.1",
     "electron": "^1.4.15",
@@ -17,6 +18,7 @@
     "mocha": "^3.2.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "react-redux": "^5.0.2",
     "redux": "^3.6.0",
     "through2": "^2.0.3",
     "typescript": "2.1.6"

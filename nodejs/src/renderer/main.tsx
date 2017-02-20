@@ -1,56 +1,14 @@
 import React = require('react');
 import ReactDOM = require('react-dom');
+import {Provider} from 'react-redux';
 import {ipcRenderer} from 'electron';
 import {createStore, applyMiddleware,
         MiddlewareAPI, Dispatch} from 'redux';
 
+import App from './app';
 import {State} from '../state';
 import * as actions from '../actions';
 import {downloaderApp} from '../reducers';
-
-interface AppProps {
-  dispatch: Dispatch<State>;
-}
-
-interface AppState {
-  url: string;
-}
-
-class App extends React.Component<AppProps, AppState> {
-  constructor(props: AppProps) {
-    super(props);
-    this.state = {
-      url: '',
-    };
-  }
-
-  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    this.props.dispatch(actions.enqueueDownload(this.state.url));
-    this.setState({
-      url: '',
-    });
-  }
-
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      url: e.target.value,
-    });
-  }
-
-  render() {
-    const id = 'url';
-
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <label htmlFor={id}>URL</label>
-        <input id={id} type="url" value={this.state.url}
-               onChange={this.handleChange} />
-        <button type="submit">Download</button>
-      </form>
-    );
-  }
-}
 
 ipcRenderer.on('currentState', (event, state: State) => {
   const syncActionsToMainMiddleware =
@@ -79,7 +37,9 @@ ipcRenderer.on('currentState', (event, state: State) => {
   });
 
   ReactDOM.render(
-    <App dispatch={store.dispatch}/>,
+    <Provider store={store}>
+      <App/>
+    </Provider>,
     document.getElementById('app')
   );
 });
