@@ -4,9 +4,10 @@ import {connect} from 'react-redux';
 
 import * as reduxState from '../state';
 import DownloadForm from './download-form';
-import DownloadList from './download-list';
 
-interface StateProps {}
+interface StateProps {
+  downloads: reduxState.Download[],
+}
 
 interface DispatchProps {}
 
@@ -16,19 +17,22 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 interface State {}
 
-class App extends React.Component<Props, State> {
+class DownloadList extends React.Component<Props, State> {
   render() {
     return (
-      <div>
-        <DownloadForm/>
-        <DownloadList/>
-      </div>
+      <ol>
+        {this.props.downloads.map(d =>
+          <li key={d.url}><code>{d.state}</code> {d.url}</li>
+        )}
+      </ol>
     );
   }
 }
 
 export default connect<StateProps, DispatchProps, OwnProps>(
-  (state: reduxState.State): StateProps => ({}),
+  (state: reduxState.State): StateProps => ({
+    downloads: state.downloads,
+  }),
 
   (dispatch: Dispatch<reduxState.State>): DispatchProps => ({}),
-)(App);
+)(DownloadList);
