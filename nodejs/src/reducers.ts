@@ -106,12 +106,14 @@ function app(state: State, action: actions.Action): State {
                 ...d,
                 state: 'queued',
                 videoInfo: d.videoInfo,
+                log: [],
               };
               return queued;
             } else {
               const preparing: PreparingDownload = {
                 ...d,
-                state: 'preparing'
+                state: 'preparing',
+                log: [],
               };
               return preparing;
             }
