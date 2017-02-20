@@ -16,6 +16,7 @@ const BASE_OPTIONS = [
 ];
 
 const CONTAINER_DOWNLOAD_DIR = '/downloads';
+const STOP_TIMEOUT = 3;
 
 export function toInfoJsonPath(filePath: string) {
   let parsed = path.parse(filePath);
@@ -39,6 +40,7 @@ export interface DownloaderOptions {
 export interface RunOptions {
   out?: NodeJS.WritableStream,
   containerCb?: (container: Docker.Container) => void;
+  startCb?: (container: Docker.Container) => void;
 }
 
 export interface VideoInfo {
@@ -152,11 +154,28 @@ class DockerizedDownloader extends EventEmitter {
     }
   }
 
+  stopAndRemoveContainer(container: Docker.Container): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      container.stop({t: STOP_TIMEOUT}, (err) => {
+        if (err) {
+          return reject(err);
+        }
+        container.remove((err: any) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve();
+        });
+      });
+    });
+  }
+
   runInContainer(cmd: string, args: string[], options?: RunOptions): Promise<void> {
     options = options || {};
 
     const out = options.out || process.stdout;
     const containerCb = options.containerCb || function() {};
+    const startCb = options.startCb || function() {};
 
     return new Promise<void>((resolve, reject) => {
       this.docker.run(this.image, [cmd, ...args], out, {
@@ -180,7 +199,7 @@ class DockerizedDownloader extends EventEmitter {
           `${this.dir}:${CONTAINER_DOWNLOAD_DIR}:rw`
         ];
         containerCb(container);
-      });
+      }).on('start', startCb);
     });
   }
 
@@ -261,14 +280,13 @@ class DockerizedDownloader extends EventEmitter {
       url,
     ]), {
       out,
-      containerCb(container) {
+      startCb(container) {
         cancelPromise.then(() => {
-          self.log(`Stopping download of ${url}.`);
-          container.stop({t: 1}, (err) => {
-            if (err) {
-              self.log('Error stopping container.');
-              console.log(err);
-            }
+          self.stopAndRemoveContainer(container).then(() => {
+            self.log('Download cancelled successfully.');
+          }).catch(err => {
+            self.log('An error occurred while cancelling.');
+            console.log(err);
           });
         });
       }

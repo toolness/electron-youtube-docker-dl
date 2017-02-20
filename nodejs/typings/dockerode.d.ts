@@ -26,6 +26,7 @@ declare namespace Dockerode {
 
   interface RunEmitter extends EventEmitter {
     on(event: 'container', listener: (c: Dockerode.Container) => void): this;
+    on(event: 'start', listener: (c: Dockerode.Container) => void): this;
   }
 }
 
