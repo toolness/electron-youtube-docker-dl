@@ -52,7 +52,7 @@ export class StateDownloader {
   private async download(download: PreparedDownload): Promise<DownloadRequest> {
     await this.downloader.prepareHost();
 
-    return this.downloader.download(download.url);
+    return this.downloader.download(download.url, download.videoInfo);
   }
 
   private startNextDownload(downloads: Download[],

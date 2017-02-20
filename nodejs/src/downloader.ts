@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import {Stream, Transform, PassThrough} from 'stream';
 import {EventEmitter} from 'events';
 import Docker = require('dockerode');
@@ -12,6 +13,15 @@ const BASE_OPTIONS = [
   // Download best mp4 format available or any other best if no mp4 available
   '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
 ];
+
+const CONTAINER_DOWNLOAD_DIR = '/downloads';
+
+export function toInfoJsonPath(filePath: string) {
+  let parsed = path.parse(filePath);
+  delete parsed['base'];
+  parsed.ext = '.info.json';
+  return path.format(parsed);
+}
 
 export function convertWindowsPath(pathname: string) {
   return pathname.replace(
@@ -73,6 +83,7 @@ class DockerizedDownloader extends EventEmitter {
   readonly docker: Docker;
   readonly image: string;
   readonly dir: string;
+  readonly nativeDir: string;
 
   constructor(options: DownloaderOptions) {
     super();
@@ -80,6 +91,7 @@ class DockerizedDownloader extends EventEmitter {
     this.docker = options.docker;
     this.image = options.image;
     this.dir = path.resolve(options.dir);
+    this.nativeDir = this.dir;
 
     if (process.env['COMPOSE_CONVERT_WINDOWS_PATHS'] === '1' ||
         process.env['COMPOSE_CONVERT_WINDOWS_PATHS'] === 'true') {
@@ -95,7 +107,7 @@ class DockerizedDownloader extends EventEmitter {
 
     return new Promise<void>((resolve, reject) => {
       this.docker.run(this.image, [cmd, ...args], out, {
-        WorkingDir: '/downloads',
+        WorkingDir: CONTAINER_DOWNLOAD_DIR,
       }, (err, data, container) => {
         if (err) {
           return reject(err);
@@ -112,7 +124,7 @@ class DockerizedDownloader extends EventEmitter {
         });
       }).on('container', (container) => {
         container.defaultOptions.start.Binds = [
-          this.dir + ':/downloads:rw'
+          `${this.dir}:${CONTAINER_DOWNLOAD_DIR}:rw`
         ];
         containerCb(container);
       });
@@ -120,6 +132,10 @@ class DockerizedDownloader extends EventEmitter {
   }
 
   async prepareHost(): Promise<void> {
+  }
+
+  private absInfoJsonPath(info: VideoInfo) {
+    return path.join(this.nativeDir, toInfoJsonPath(info._filename));
   }
 
   async getVideoInfo(url: string): Promise<VideoInfo> {
@@ -150,12 +166,16 @@ class DockerizedDownloader extends EventEmitter {
     }
 
     const allData = await streamFinished;
+    let info;
 
     try {
-      return <VideoInfo> JSON.parse(allData);
+      info = <VideoInfo> JSON.parse(allData);
     } catch (e) {
       throw new Error('unable to parse JSON: ' + allData);
     }
+
+    fs.writeFileSync(this.absInfoJsonPath(info), allData);
+    return info;
   }
 
   log(msg: string): void {
@@ -163,9 +183,15 @@ class DockerizedDownloader extends EventEmitter {
     this.emit('log', msg);
   }
 
-  download(url: string): DownloadRequest {
+  download(url: string, videoInfo?: VideoInfo): DownloadRequest {
     const self = this;
+    const options = BASE_OPTIONS.slice();
     let cancel = () => {};
+
+    if (videoInfo && fs.existsSync(this.absInfoJsonPath(videoInfo))) {
+      options.push('--load-info-json',
+                   toInfoJsonPath(videoInfo._filename));
+    }
 
     // TODO: Is it OK that this promise may never be resolved/rejected,
     // or will that cause a memory leak?
@@ -177,7 +203,7 @@ class DockerizedDownloader extends EventEmitter {
 
     out.pipe(process.stdout);
 
-    const promise = this.runInContainer('youtube-dl', BASE_OPTIONS.concat([
+    const promise = this.runInContainer('youtube-dl', options.concat([
       '--newline',
       url,
     ]), {

@@ -8,7 +8,7 @@ async function main(d: DockerizedDownloader, url: string): Promise<void> {
 
   console.log('Downloading ', info.fulltitle, 'as', info._filename);
 
-  return await d.download(url).promise;
+  return await d.download(url, info).promise;
 }
 
 if (module.parent === null) {
