@@ -8,6 +8,7 @@ import {COMMAND_FAILED} from './constants';
 
 // https://github.com/rg3/youtube-dl/blob/master/README.md#options
 const BASE_OPTIONS = [
+  '--no-color',
   '--restrict-filenames',
   '--no-playlist',
   // Download best mp4 format available or any other best if no mp4 available
