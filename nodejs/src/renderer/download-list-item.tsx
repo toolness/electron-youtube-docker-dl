@@ -80,7 +80,7 @@ class DownloadListItem extends React.Component<Props, State> {
         <br/>
         <details>
           <summary>Output</summary>
-          <pre>{d.log.map(s => <span>{s}</span>)}</pre>
+          <pre>{d.log.map((s, i) => <span key={i}>{s}</span>)}</pre>
         </details>
         <ul>
           {showInFinderBtn}
