@@ -6,11 +6,14 @@ import * as path from 'path';
 
 import {DOWNLOAD_DIR} from '../constants';
 import * as reduxState from '../state';
+import * as actions from '../actions';
 import DownloadForm from './download-form';
 
 interface StateProps {}
 
-interface DispatchProps {}
+interface DispatchProps {
+  cancel: () => void;
+}
 
 interface OwnProps {
   download: reduxState.Download
@@ -37,6 +40,13 @@ class DownloadListItem extends React.Component<Props, State> {
     const d = this.props.download;
     let name = d.url;
     let showInFinderBtn = null;
+    const cancelOrDeleteBtn = (
+      <li>
+        <button onClick={this.props.cancel}>
+          {d.state === 'finished' ? 'Delete' : 'Cancel'}
+        </button>
+      </li>
+    );
 
     if (d.videoInfo) {
       name = d.videoInfo.title;
@@ -59,6 +69,7 @@ class DownloadListItem extends React.Component<Props, State> {
         <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
         <ol>
           {showInFinderBtn}
+          {cancelOrDeleteBtn}
         </ol>
       </li>
     );
@@ -68,5 +79,7 @@ class DownloadListItem extends React.Component<Props, State> {
 export default connect<StateProps, DispatchProps, OwnProps>(
   (state: reduxState.State): StateProps => ({}),
 
-  (dispatch: Dispatch<reduxState.State>): DispatchProps => ({}),
+  (dispatch: Dispatch<reduxState.State>, ownProps: OwnProps): DispatchProps => ({
+    cancel: () => dispatch(actions.cancelDownload(ownProps.download.url))
+  }),
 )(DownloadListItem);
