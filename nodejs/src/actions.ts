@@ -1,8 +1,13 @@
 import {VideoInfo} from './downloader';
 
+type Origin = 'renderer' | 'main';
+
+const origin: Origin = (typeof(window) === 'undefined')
+                       ? 'main' : 'renderer';
+
 export interface SyncableAction {
   type: string;
-  origin?: 'renderer' | 'main';
+  origin?: Origin;
 }
 
 interface LogAction extends SyncableAction {
@@ -37,10 +42,17 @@ export type Action = (
   ErrorAction
 );
 
+function ensureOrigin(o: Origin): void {
+  if (origin !== o) {
+    throw new Error(`action should only be created in the ${o} process`);
+  }
+}
+
 /**
  * First-time intialization, run at startup.
  */
 export function init(): Action {
+  ensureOrigin('main');
   return {type: 'init'};
 };
 
@@ -63,6 +75,7 @@ export function enqueueDownload(url: string): SimpleUrlAction {
  * Start a download.
  */
 export function startDownload(url: string): SimpleUrlAction {
+  ensureOrigin('main');
   return {type: 'startDownload', url};
 }
 
@@ -70,6 +83,7 @@ export function startDownload(url: string): SimpleUrlAction {
  * Successfully finish a download.
  */
 export function finishDownload(url: string): SimpleUrlAction {
+  ensureOrigin('main');
   return {type: 'finishDownload', url};
 }
 
@@ -86,6 +100,7 @@ export function cancelDownload(url: string): SimpleUrlAction {
  */
 export function downloadPrepared(url: string,
                                  videoInfo: VideoInfo): PreparedAction {
+  ensureOrigin('main');
   return {type: 'downloadPrepared', url, videoInfo};
 }
 
@@ -93,5 +108,6 @@ export function downloadPrepared(url: string,
  * Signal that an error occurred while trying to download.
  */
 export function downloadError(url: string, message: string): ErrorAction {
+  ensureOrigin('main');
   return {type: 'downloadError', url, message};
 }
