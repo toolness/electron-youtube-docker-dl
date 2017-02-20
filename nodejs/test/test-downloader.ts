@@ -3,8 +3,19 @@ import expect = require('expect.js');
 
 import {
   convertWindowsPath,
-  toInfoJsonPath
+  toInfoJsonPath,
+  exampleVideoInfo,
+  cleanVideoInfo,
 } from '../src/downloader';
+
+describe('cleanVideoInfo', () => {
+  it('removes keys not in VideoInfo', () => {
+    let v: any = {...exampleVideoInfo};
+    v['boop'] = 5;
+    cleanVideoInfo(v);
+    expect(v).to.not.contain('boop');
+  });
+});
 
 describe('toInfoJsonPath', () => {
   it('works with filenames', () => {

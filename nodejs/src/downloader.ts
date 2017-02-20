@@ -68,6 +68,34 @@ export interface VideoInfo {
   _filename: string;
 }
 
+export const exampleVideoInfo = {
+  id: '',
+  uploader: '',
+  uploader_id: '',
+  uploader_url: '',
+  upload_date: '',
+  license: '',
+  title: '',
+  thumbnail: '',
+  description: '',
+  categories: [],
+  tags: [],
+  duration: 0,
+  age_limit: 0,
+  webpage_url: '',
+  view_count: 0,
+  like_count: 0,
+  dislike_count: 0,
+  average_rating: 0,
+  fulltitle: '',
+  display_id: '',
+  width: 0,
+  height: 0,
+  fps: 0,
+  ext: '',
+  _filename: '',
+};
+
 export interface DownloadRequest {
   promise: Promise<void>;
   out: Transform;
@@ -77,6 +105,30 @@ export interface DownloadRequest {
 interface DockerizedDownloader {
   on(event: 'log', cb: (msg: string) => void): this;
   emit(event: 'log', msg: string): boolean;
+}
+
+export function cleanVideoInfo(info: any): VideoInfo {
+  let key: keyof VideoInfo;
+  for (key in exampleVideoInfo) {
+    if (key in info) {
+      let infoType = typeof(info[key]);
+      let expectedType = typeof(exampleVideoInfo[key]);
+      if (infoType !== expectedType) {
+        console.warn(`Expected "${key}" to be a ${expectedType} ` +
+                     `but it is a ${infoType}`);
+      }
+    } else {
+      console.warn(`Expected "${key}" to be in video info`);
+    }
+  }
+
+  for (let ikey in info) {
+    if (!(ikey in exampleVideoInfo)) {
+      delete info[ikey];
+    }
+  }
+
+  return <VideoInfo> info;
 }
 
 class DockerizedDownloader extends EventEmitter {
@@ -169,9 +221,9 @@ class DockerizedDownloader extends EventEmitter {
     let info;
 
     try {
-      info = <VideoInfo> JSON.parse(allData);
+      info = cleanVideoInfo(JSON.parse(allData));
     } catch (e) {
-      throw new Error('unable to parse JSON: ' + allData);
+      throw new Error('unable to parse and validate JSON: ' + allData);
     }
 
     fs.writeFileSync(this.absInfoJsonPath(info), allData);
