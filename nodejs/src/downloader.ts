@@ -128,25 +128,34 @@ class DockerizedDownloader extends EventEmitter {
       dataParts.push(chunk.toString('ascii'));
       callback();
     });
-    const parsedInfo = new Promise((resolve, reject) => {
+    const streamFinished = new Promise<string>((resolve) => {
       stream.on('finish', () => {
-        const allData = dataParts.join('');
-        try {
-          resolve(JSON.parse(allData));
-        } catch (e) {
-          reject('unable to parse JSON: ' + allData);
-        }
+        resolve(dataParts.join(''));
       });
     });
 
-    await this.runInContainer('youtube-dl', BASE_OPTIONS.concat([
-      '--no-warnings',
-      '-j', url
-    ]), {
-      out: stream,
-    });
+    try {
+      await this.runInContainer('youtube-dl', BASE_OPTIONS.concat([
+        '--no-warnings',
+        '-j', url
+      ]), {
+        out: stream,
+      });
+    } catch (err) {
+      if (err && err.message === COMMAND_FAILED) {
+        const errorOutput = await streamFinished;
+        throw new Error(errorOutput);
+      }
+      throw err;
+    }
 
-    return <VideoInfo> await parsedInfo;
+    const allData = await streamFinished;
+
+    try {
+      return <VideoInfo> JSON.parse(allData);
+    } catch (e) {
+      throw new Error('unable to parse JSON: ' + allData);
+    }
   }
 
   log(msg: string): void {
