@@ -77,11 +77,11 @@ class DownloadListItem extends React.Component<Props, State> {
         <code>{d.state}</code>
         <br/>
         <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
-        <ol>
+        <ul>
           {showInFinderBtn}
           {retryBtn}
           {cancelOrDeleteBtn}
-        </ol>
+        </ul>
       </li>
     );
   }
