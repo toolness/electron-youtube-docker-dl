@@ -73,10 +73,15 @@ export class StateDownloader {
           };
 
           promise.then((req) => {
-            req.out.pipe(through2((chunk, enc, callback) => {
-              dispatch(downloadLog(d.url, chunk.toString('ascii')));
-              callback();
-            }));
+            // Disabling this for now--if youtube-dl is in its weird mode
+            // where it's spamming progress updates really fast, this
+            // seems to slow things down considerably and lock up the
+            // renderer process.
+            //
+            // req.out.pipe(through2((chunk, enc, callback) => {
+            //   dispatch(downloadLog(d.url, chunk.toString('ascii')));
+            //   callback();
+            // }));
             req.promise.then(() => {
               this.downloadRequests.delete(d.url);
               dispatch(finishDownload(d.url));
