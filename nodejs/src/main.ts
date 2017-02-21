@@ -29,6 +29,23 @@ const syncActionsToWindowMiddleware =
 
     return result;
 };
+const shutdownMiddleware =
+  (store: MiddlewareAPI<State>) =>
+  (next: Dispatch<State>) =>
+  (action: actions.Action): actions.Action => {
+    const result = next(action);
+    const state = store.getState();
+
+    if (state.isShuttingDown) {
+      if (!state.downloads.some(d => d.state === 'preparing' ||
+                                d.state === 'started')) {
+        console.log("All downloads stopped, shutting down cleanly.");
+        app.quit();
+      }
+    }
+
+    return result;
+};
 
 const store = createStore<State>(
   downloaderApp,
@@ -36,7 +53,8 @@ const store = createStore<State>(
   applyMiddleware(
     stateSaver.middleware,
     stateDownloader.middleware,
-    syncActionsToWindowMiddleware
+    syncActionsToWindowMiddleware,
+    shutdownMiddleware,
   )
 );
 
@@ -64,15 +82,10 @@ app.on('ready', () => {
   win.on('closed', () => {
     win = null;
   });
-
-  // TODO: This is just sample code, remove it eventually.
-  store.dispatch(actions.enqueueDownload('http://boop'));
-  store.dispatch(actions.enqueueDownload('https://www.youtube.com/watch?v=y7afWRBNXwQ'));
 });
 
 app.on('window-all-closed', () => {
-  // TODO: Gracefully stop all downloads.
-  app.quit();
+  store.dispatch(actions.shutdown());
 });
 
 ipcMain.on('action', (event, action: actions.SyncableAction) => {

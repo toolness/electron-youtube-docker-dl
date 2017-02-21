@@ -28,7 +28,7 @@ export class StateSaver {
       const result = next(action);
       const newState = store.getState();
 
-      if (newState !== prevState) {
+      if (newState !== prevState && !newState.isShuttingDown) {
         const contents = JSON.stringify(newState, null, 2);
 
         // TODO: Make this asynchronous.

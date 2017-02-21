@@ -92,15 +92,23 @@ export class StateDownloader {
     }
   }
 
-  private handleCancel(url: string, downloads: Download[]) {
+  private cancel(download: Download) {
+    const promise = this.downloadRequests.get(download.url);
+    if (promise) {
+      console.log('Scheduling cancellation of download', download.url);
+      promise.then(req => { req.cancel(); });
+    }
+  }
+
+  private cancelAll(downloads: Download[]) {
+    downloads.forEach(d => this.cancel(d));
+  }
+
+  private handleCancelOrRemove(url: string, downloads: Download[]) {
     downloads.forEach(d => {
       if (d.url === url) {
         if (d.state === 'started') {
-          const promise = this.downloadRequests.get(url);
-          if (promise) {
-            console.log('Scheduling cancellation of download', url);
-            promise.then(req => { req.cancel(); });
-          }
+          this.cancel(d);
         } else if (d.state === 'finished') {
           const filePath = path.join(DOWNLOAD_DIR, d.videoInfo._filename);
           console.log('Checking for existence of', filePath);
@@ -119,7 +127,7 @@ export class StateDownloader {
       const prevState = store.getState();
 
       if (action.type === 'cancelDownload') {
-        this.handleCancel(action.url, prevState.downloads);
+        this.handleCancelOrRemove(action.url, prevState.downloads);
       }
 
       const result = next(action);
@@ -131,6 +139,11 @@ export class StateDownloader {
           store.dispatch(log(message + '\n'));
         });
         processDownloads = true;
+      } else if (action.type === 'shutdown') {
+        this.cancelAll(newState.downloads);
+      }
+      if (newState.isShuttingDown) {
+        processDownloads = false;
       }
 
       if (processDownloads) {

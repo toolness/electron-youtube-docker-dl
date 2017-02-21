@@ -16,7 +16,7 @@ const BASE_OPTIONS = [
 ];
 
 const CONTAINER_DOWNLOAD_DIR = '/downloads';
-const STOP_TIMEOUT = 3;
+const STOP_TIMEOUT = 1;
 
 export function toInfoJsonPath(filePath: string) {
   let parsed = path.parse(filePath);

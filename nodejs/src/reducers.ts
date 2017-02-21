@@ -3,6 +3,7 @@ import {State, PreparedDownload, ErroredDownload,
 import * as actions from './actions';
 
 export const initialState: State = {
+  isShuttingDown: false,
   log: [],
   downloads: []
 };
@@ -30,6 +31,11 @@ function app(state: State, action: actions.Action): State {
     case '@@redux/INIT':
     case 'init':
       return state;
+
+    case 'shutdown':
+      return assign(state, {
+        isShuttingDown: true
+      });
 
     case 'log':
       return assign(state, {

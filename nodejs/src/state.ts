@@ -27,6 +27,7 @@ export type Download = (
 );
 
 export interface State {
+  isShuttingDown: boolean;
   log: string[];
   downloads: Download[];
 }

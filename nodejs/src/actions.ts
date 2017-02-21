@@ -10,6 +10,10 @@ export interface SyncableAction {
   origin?: Origin;
 }
 
+interface SimpleAction extends SyncableAction {
+  type: 'shutdown';
+}
+
 interface LogAction extends SyncableAction {
   type: 'log';
   message: string;
@@ -42,6 +46,7 @@ interface ErrorAction extends SyncableAction {
 export type Action = (
   {type: 'init', origin?: undefined} |
   {type: '@@redux/INIT', origin?: undefined} |
+  SimpleAction |
   LogAction |
   SimpleUrlAction |
   UrlLogAction |
@@ -61,6 +66,14 @@ function ensureOrigin(o: Origin): void {
 export function init(): Action {
   ensureOrigin('main');
   return {type: 'init'};
+};
+
+/**
+ * Shut down the app.
+ */
+export function shutdown(): SimpleAction {
+  ensureOrigin('main');
+  return {type: 'shutdown'};
 };
 
 /**
