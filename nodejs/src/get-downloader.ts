@@ -8,6 +8,7 @@ import DockerMachinedDownloader from './machined-downloader';
 import DockerizedDownloader from './downloader';
 
 const IMAGE_NAME = 'youtubedldockerized_app';
+const DOCKER_VERSION = 'v1.13';
 
 function getDockerMachinedDownloader(): DockerMachinedDownloader {
   const DOCKER_CERT_PATH = process.env['DOCKER_CERT_PATH'];
@@ -31,7 +32,7 @@ function getDockerMachinedDownloader(): DockerMachinedDownloader {
     ca: loadCert('ca.pem'),
     key: loadCert('key.pem'),
     cert: loadCert('cert.pem'),
-    version: 'v1.13',
+    version: DOCKER_VERSION,
   });
 
   return new DockerMachinedDownloader({
@@ -42,9 +43,22 @@ function getDockerMachinedDownloader(): DockerMachinedDownloader {
   });
 }
 
+function getDockerizedDownloader(): DockerizedDownloader {
+  const docker = new Docker({
+    // TODO: What if the host is on Windows?
+    socketPath: '/var/run/docker.sock',
+    version:DOCKER_VERSION
+  });
+  return new DockerizedDownloader({
+    docker,
+    image: IMAGE_NAME,
+    dir: DOWNLOAD_DIR
+  });
+}
+
 export default function getDownloader(): DockerizedDownloader {
   if ('DOCKER_HOST' in process.env) {
     return getDockerMachinedDownloader();
   }
-  throw new Error('TODO: Support native Docker');
+  return getDockerizedDownloader();
 }

@@ -5,11 +5,12 @@ declare interface RunOptions {
 }
 
 declare interface DockerodeOptions {
-  host: string,
-  port: number,
-  ca: string,
-  key: string,
-  cert: string,
+  socketPath?: string,
+  host?: string,
+  port?: number,
+  ca?: string,
+  key?: string,
+  cert?: string,
   version: string
 }
 
