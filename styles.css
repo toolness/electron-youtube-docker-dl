@@ -72,6 +72,10 @@ button {
   grid-area: status;
 }
 
+.downloads .status.status-errored {
+  color: red;
+}
+
 .downloads .details {
   grid-area: details;
 }

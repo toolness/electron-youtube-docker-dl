@@ -84,7 +84,7 @@ class DownloadListItem extends React.Component<Props, State> {
 
     return (
       <li>
-        <div className="status">{d.state}</div>
+        <div className={`status status-${d.state}`}>{d.state}</div>
         <div className="details">
           <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
         </div>
