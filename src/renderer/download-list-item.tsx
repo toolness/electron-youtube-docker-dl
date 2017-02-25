@@ -83,11 +83,9 @@ class DownloadListItem extends React.Component<Props, State> {
     }
 
     return (
-      <li>
+      <li className="download">
         <code>{d.state}</code>
-        <br/>
         <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
-        <br/>
         {output}
         <ul>
           {showInFinderBtn}
