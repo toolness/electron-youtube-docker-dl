@@ -14,10 +14,4 @@ RUN curl -L https://bootstrap.pypa.io/get-pip.py \
 
 RUN ln -s /usr/bin/python3.6 /usr/bin/python
 
-COPY requirements.txt /
-
-RUN pip install -r /requirements.txt
-
-COPY scripts/ /usr/local/bin/
-
-RUN chmod a+rx /usr/local/bin/*
+RUN pip install youtube_dl==2017.02.24.1

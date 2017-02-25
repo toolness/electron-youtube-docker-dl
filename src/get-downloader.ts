@@ -7,7 +7,7 @@ import {DOWNLOAD_DIR} from './constants';
 import DockerMachinedDownloader from './machined-downloader';
 import DockerizedDownloader from './downloader';
 
-const IMAGE_NAME = 'youtubedldockerized_app';
+const IMAGE_NAME = 'youtube-dl';
 const DOCKER_VERSION = 'v1.13';
 
 function getDockerMachinedDownloader(): DockerMachinedDownloader {

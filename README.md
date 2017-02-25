@@ -1,20 +1,13 @@
-This is a simple dockerized web app that makes it easy to download
+This is an Electron app that makes it easy to download
 videos from youtube to your system.
+
+Docker is required. If you use Docker Toolbox, you should
+run the app from a Docker Quickstart Terminal (or otherwise
+have the docker-machine environment variables set).
 
 ## Quick start
 
 ```
-docker-compose build
-docker-compose up
-```
-
-Then visit http://localhost:5000. Any downloads you initiate will be in the
-`downloads` directory.
-
-## Running tests
-
-To run the test suite/linter:
-
-```
-docker-compose run app test
+npm install
+npm start
 ```

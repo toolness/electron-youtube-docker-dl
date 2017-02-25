@@ -25,9 +25,10 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "tsc && electron .",
-    "downloadtest": "tsc && node build/src/cli.js https://www.youtube.com/watch?v=y7afWRBNXwQ",
-    "test": "tsc && mocha build/test/"
+    "compile": "docker build -t youtube-dl docker && tsc",
+    "start": "npm run compile && electron .",
+    "downloadtest": "npm run compile && node build/src/cli.js https://www.youtube.com/watch?v=y7afWRBNXwQ",
+    "test": "npm run compile && mocha build/test/"
   },
   "author": "",
   "license": "ISC"
