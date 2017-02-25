@@ -40,7 +40,7 @@ const shutdownMiddleware =
       if (!state.downloads.some(d => d.state === 'preparing' ||
                                 d.state === 'started')) {
         console.log("All downloads stopped, shutting down cleanly.");
-        app.quit();
+        app.exit(0);
       }
     }
 
@@ -84,7 +84,8 @@ app.on('ready', () => {
   });
 });
 
-app.on('window-all-closed', () => {
+app.on('will-quit', (e) => {
+  e.preventDefault();
   store.dispatch(actions.shutdown());
 });
 
