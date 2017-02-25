@@ -42,6 +42,7 @@ class DownloadListItem extends React.Component<Props, State> {
     let name = d.url;
     let showInFinderBtn = null;
     let retryBtn = null;
+    let output = null;
     const cancelOrDeleteBtn = (
       <li>
         <button onClick={this.props.cancel}>
@@ -72,16 +73,22 @@ class DownloadListItem extends React.Component<Props, State> {
       );
     }
 
+    if (d.log.length) {
+      output = (
+        <details>
+          <summary>Output</summary>
+          <pre>{d.log.map((s, i) => <span key={i}>{s}</span>)}</pre>
+        </details>
+      );
+    }
+
     return (
       <li>
         <code>{d.state}</code>
         <br/>
         <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
         <br/>
-        <details>
-          <summary>Output</summary>
-          <pre>{d.log.map((s, i) => <span key={i}>{s}</span>)}</pre>
-        </details>
+        {output}
         <ul>
           {showInFinderBtn}
           {retryBtn}

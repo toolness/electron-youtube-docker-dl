@@ -60,6 +60,9 @@ const store = createStore<State>(
 
 app.on('ready', () => {
   win = new BrowserWindow({
+    webPreferences: {
+      experimentalFeatures: true,
+    },
     width: 800,
     height: 600
   });
