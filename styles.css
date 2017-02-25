@@ -1,5 +1,6 @@
-html {
+body {
   font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
 }
 
 a {
@@ -12,6 +13,7 @@ pre {
   padding: 8px;
   white-space: pre-wrap;
   word-break: break-all;
+  font-family: Consolas, Monaco, monospace;
 }
 
 form {
@@ -34,7 +36,7 @@ input[type="url"], button {
 
 button {
   background-color: #f0f0f0;
-  border: 1px solid gray;
+  border: none;
 }
 
 /* http://webaim.org/techniques/css/invisiblecontent/ */
