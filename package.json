@@ -26,7 +26,7 @@
   "devDependencies": {},
   "scripts": {
     "compile": "docker build -t youtube-dl docker && tsc",
-    "start": "npm run compile && electron .",
+    "start": "electron .",
     "downloadtest": "npm run compile && node build/src/cli.js https://www.youtube.com/watch?v=y7afWRBNXwQ",
     "test": "npm run compile && mocha build/test/"
   },

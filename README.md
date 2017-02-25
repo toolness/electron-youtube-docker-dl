@@ -9,5 +9,6 @@ have the docker-machine environment variables set).
 
 ```
 npm install
+npm run compile
 npm start
 ```
