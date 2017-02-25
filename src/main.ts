@@ -70,7 +70,7 @@ app.on('ready', () => {
     slashes: true
   }));
 
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
 
   store.dispatch(actions.init());
 
