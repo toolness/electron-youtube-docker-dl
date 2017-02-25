@@ -64,6 +64,7 @@ button {
 }
 
 .downloads > li:last-child {
+  padding-bottom: 0;
   border-bottom: none;
 }
 
@@ -87,13 +88,14 @@ button {
 
 .downloads .output {
   grid-area: output;
-  padding: 1em 0;
+  margin-top: 1em;
 }
 
 .downloads ul.actions {
   grid-area: actions;
   list-style-type: none;
   padding-left: 0;
+  margin-top: 1em;
 }
 
 .downloads ul.actions li {
