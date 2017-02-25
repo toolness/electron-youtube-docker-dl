@@ -46,8 +46,9 @@ class DownloadForm extends React.Component<Props, State> {
 
     return (
       <form onSubmit={this.handleSubmit}>
-        <label htmlFor={id}>URL</label>
+        <label htmlFor={id} className="sr-only">URL</label>
         <input id={id} type="url" value={this.state.url} required
+               placeholder="http://"
                onChange={this.handleChange} />
         <button type="submit">Download</button>
       </form>

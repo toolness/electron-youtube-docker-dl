@@ -14,6 +14,39 @@ pre {
   word-break: break-all;
 }
 
+form {
+  width: 100%;
+  display: flex;
+  flex-flow: space-between;
+  align-items: stretch;
+}
+
+form input {
+  flex: 1;
+  margin-right: 8px;
+}
+
+input[type="url"], button {
+  padding: 8px;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button {
+  background-color: #f0f0f0;
+  border: 1px solid gray;
+}
+
+/* http://webaim.org/techniques/css/invisiblecontent/ */
+.sr-only {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .downloads {
   padding-left: 0;
 }
@@ -54,6 +87,7 @@ pre {
 
 .downloads .output {
   grid-area: output;
+  padding: 1em 0;
 }
 
 .downloads ul.actions {
@@ -64,4 +98,9 @@ pre {
 
 .downloads ul.actions li {
   display: inline;
+  margin-right: 8px;
+}
+
+.downloads ul.actions li:last-child {
+  margin-right: 0;
 }
