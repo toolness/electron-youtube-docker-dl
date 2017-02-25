@@ -20,7 +20,7 @@ interface State {}
 class DownloadList extends React.Component<Props, State> {
   render() {
     return (
-      <ol>
+      <ol className="downloads">
         {this.props.downloads.map(d =>
           <DownloadListItem key={d.url} download={d} />
         )}

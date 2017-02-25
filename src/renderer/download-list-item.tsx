@@ -75,7 +75,7 @@ class DownloadListItem extends React.Component<Props, State> {
 
     if (d.log.length) {
       output = (
-        <details>
+        <details className="output">
           <summary>Output</summary>
           <pre>{d.log.map((s, i) => <span key={i}>{s}</span>)}</pre>
         </details>
@@ -83,11 +83,16 @@ class DownloadListItem extends React.Component<Props, State> {
     }
 
     return (
-      <li className="download">
-        <code>{d.state}</code>
-        <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
+      <li>
+        <div className="status">{d.state}</div>
+        <div className="details">
+          <a href={d.url} onClick={this.handleUrlClick}>{name}</a>
+        </div>
+        {d.videoInfo ? <div className="thumbnail">
+                         <img src={d.videoInfo.thumbnail}/>
+                       </div> : null}
         {output}
-        <ul>
+        <ul className="actions">
           {showInFinderBtn}
           {retryBtn}
           {cancelOrDeleteBtn}
