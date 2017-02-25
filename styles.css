@@ -1,0 +1,67 @@
+html {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+pre {
+  background: black;
+  color: lightgray;
+  padding: 8px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.downloads {
+  padding-left: 0;
+}
+
+.downloads > li {
+  display: grid;
+  grid-template-columns: 100px auto 240px;
+  grid-template-rows: auto;
+  grid-template-areas: "status details thumbnail"
+                       "output output output"
+                       "actions actions actions";
+  border-bottom: 1px dotted gray;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+
+.downloads > li:last-child {
+  border-bottom: none;
+}
+
+.downloads .status {
+  grid-area: status;
+}
+
+.downloads .details {
+  grid-area: details;
+}
+
+.downloads .thumbnail {
+  grid-area: thumbnail;
+}
+
+.downloads .thumbnail img {
+  display: block;
+  width: 240px;
+  -webkit-filter: grayscale(1);
+}
+
+.downloads .output {
+  grid-area: output;
+}
+
+.downloads ul.actions {
+  grid-area: actions;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.downloads ul.actions li {
+  display: inline;
+}
