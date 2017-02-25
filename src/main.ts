@@ -61,6 +61,7 @@ const store = createStore<State>(
 app.on('ready', () => {
   win = new BrowserWindow({
     webPreferences: {
+      // This is for CSS grid support.
       experimentalFeatures: true,
     },
     width: 800,
