@@ -12,3 +12,7 @@ npm install
 npm run compile
 npm start
 ```
+
+## License
+
+This is free and unencumbered software released into the public domain.
