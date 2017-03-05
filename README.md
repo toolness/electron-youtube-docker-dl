@@ -35,6 +35,17 @@ npm run compile
 npm start
 ```
 
+## Uninstallation
+
+Wiping out the repository's directory takes care of almost everything.
+
+You'll also want to delete the container image that was made during the
+build process by running:
+
+```
+docker rmi youtube-dl
+```
+
 ## License
 
 This is free and unencumbered software released into the public domain.
