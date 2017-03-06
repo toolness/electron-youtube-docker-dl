@@ -1,10 +1,14 @@
 This is an Electron app that makes it easy to download
-videos from youtube to your system. Under the hood it
-uses [youtube-dl](https://rg3.github.io/youtube-dl/).
+videos from youtube to your system. Multiple downloads
+can be queued; the app can be quit and resumes where
+it left off when restarted.
 
-Docker is required. If you use Docker Toolbox, you should
-run the app from a Docker Quickstart Terminal (or otherwise
-have the docker-machine environment variables set).
+![Screenshot](https://cloud.githubusercontent.com/assets/124687/23592912/e5f0d2aa-01d5-11e7-9437-23030df455dd.png)
+
+Under the hood the app uses [youtube-dl](https://rg3.github.io/youtube-dl/)
+and [avconv](https://libav.org/avconv.html), which are wrapped in a
+Docker container to make cross-platform deployment easier (well, uh, easier
+for me--not for potential users, who have to install Docker).
 
 ## Motivation
 
@@ -24,10 +28,19 @@ very familiar with, like:
 So it's kind of a weird experiment and your mileage may vary
 if you actually try to use it.
 
-## Quick start
+## Requirements
 
-I wrote this with Node 7.5, but it probably runs fine on earlier versions,
-especially since TypeScript transpiles the most advanced syntax.
+[Docker](https://www.docker.com/) is required. If you're on an
+unprofessional version of Windows and are relegated to using
+[Docker Toolbox](https://www.docker.com/products/docker-toolbox) like me,
+you should run the app from a Docker Quickstart Terminal (or otherwise
+have the docker-machine environment variables set).
+
+You'll also need [Node JS](https://nodejs.org/en/). I wrote this with
+Node 7.5, but it probably runs fine on earlier versions, especially since
+TypeScript transpiles the most advanced syntax.
+
+## Quick start
 
 ```
 npm install
