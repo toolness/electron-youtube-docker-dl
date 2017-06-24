@@ -2,6 +2,9 @@ import {EventEmitter} from 'events';
 
 declare interface RunOptions {
   WorkingDir: string;
+  Hostconfig: {
+    Binds: string[]
+  }
 }
 
 declare interface DockerodeOptions {
@@ -19,11 +22,6 @@ declare namespace Dockerode {
     id: string;
     remove(cb: (err: any) => void): void;
     stop(options: {t?: number}, cb: (err: any, data: any) => void): void;
-    defaultOptions: {
-      start: {
-        Binds: string[]
-      }
-    }
   }
 
   interface RunEmitter extends EventEmitter {

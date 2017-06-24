@@ -8,7 +8,8 @@ import DockerMachinedDownloader from './machined-downloader';
 import DockerizedDownloader from './downloader';
 
 const IMAGE_NAME = 'youtube-dl';
-const DOCKER_VERSION = 'v1.13';
+const DOCKER_VERSION = 'v1.25';
+const IS_WINDOWS = /^win/.test(process.platform);
 
 function getDockerMachinedDownloader(): DockerMachinedDownloader {
   const DOCKER_CERT_PATH = process.env['DOCKER_CERT_PATH'];
@@ -45,9 +46,9 @@ function getDockerMachinedDownloader(): DockerMachinedDownloader {
 
 function getDockerizedDownloader(): DockerizedDownloader {
   const docker = new Docker({
-    // TODO: What if the host is on Windows?
-    socketPath: '/var/run/docker.sock',
-    version:DOCKER_VERSION
+    socketPath: IS_WINDOWS ? '//./pipe/docker_engine'
+                           : '/var/run/docker.sock',
+    version: DOCKER_VERSION
   });
   return new DockerizedDownloader({
     docker,

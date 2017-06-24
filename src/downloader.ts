@@ -180,6 +180,9 @@ class DockerizedDownloader extends EventEmitter {
     return new Promise<void>((resolve, reject) => {
       this.docker.run(this.image, [cmd, ...args], out, {
         WorkingDir: CONTAINER_DOWNLOAD_DIR,
+        Hostconfig: {
+          Binds: [`${this.dir}:${CONTAINER_DOWNLOAD_DIR}:rw`]
+        },
       }, (err, data, container) => {
         if (err) {
           return reject(err);
@@ -195,9 +198,6 @@ class DockerizedDownloader extends EventEmitter {
           resolve();
         });
       }).on('container', (container) => {
-        container.defaultOptions.start.Binds = [
-          `${this.dir}:${CONTAINER_DOWNLOAD_DIR}:rw`
-        ];
         containerCb(container);
       }).on('start', startCb);
     });
