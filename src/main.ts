@@ -93,7 +93,7 @@ app.on('will-quit', (e) => {
   store.dispatch(actions.shutdown());
 });
 
-ipcMain.on('action', (event, action: actions.SyncableAction) => {
+ipcMain.on('action', (event: any, action: actions.SyncableAction) => {
   action.origin = 'renderer';
   console.log('got action from renderer', action);
   store.dispatch(action);

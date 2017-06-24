@@ -10,7 +10,7 @@ import {State} from '../state';
 import * as actions from '../actions';
 import {downloaderApp} from '../reducers';
 
-ipcRenderer.on('currentState', (event, state: State) => {
+ipcRenderer.on('currentState', (event: any, state: State) => {
   const syncActionsToMainMiddleware =
     (store: MiddlewareAPI<State>) =>
     (next: Dispatch<State>) =>
@@ -30,7 +30,7 @@ ipcRenderer.on('currentState', (event, state: State) => {
   );
   console.log('wooot hello', state);
 
-  ipcRenderer.on('action', (event, action: actions.SyncableAction) => {
+  ipcRenderer.on('action', (event: any, action: actions.SyncableAction) => {
     action.origin = 'main';
     store.dispatch(action);
     console.log('got action', action, store.getState());
