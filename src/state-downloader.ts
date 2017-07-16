@@ -5,7 +5,7 @@ import through2 = require('through2');
 
 import {DOWNLOAD_DIR} from './constants';
 import DockerizedDownloader from './downloader';
-import {DownloadRequest} from './downloader';
+import {DownloadRequest, toInfoJsonPath} from './downloader';
 import {stringifyError} from './util';
 import {VideoInfo} from './downloader';
 import {Action, downloadPrepared, downloadError, log,
@@ -109,6 +109,14 @@ export class StateDownloader {
     downloads.forEach(d => this.cancel(d));
   }
 
+  private tryRemoving(filePath: string) {
+    console.log('Checking for existence of', filePath);
+    if (fs.existsSync(filePath)) {
+      console.log('File exists, removing it.');
+      fs.unlinkSync(filePath);
+    }
+  }
+
   private handleCancelOrRemove(url: string, downloads: Download[]) {
     downloads.forEach(d => {
       if (d.url === url) {
@@ -116,11 +124,8 @@ export class StateDownloader {
           this.cancel(d);
         } else if (d.state === 'finished') {
           const filePath = path.join(DOWNLOAD_DIR, d.videoInfo._filename);
-          console.log('Checking for existence of', filePath);
-          if (fs.existsSync(filePath)) {
-            console.log('File exists, removing it.');
-            fs.unlinkSync(filePath);
-          }
+          this.tryRemoving(filePath);
+          this.tryRemoving(toInfoJsonPath(filePath));
         }
       }
     });
