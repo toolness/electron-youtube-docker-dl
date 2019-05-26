@@ -1,16 +1,13 @@
-FROM ubuntu:16.10
+FROM ubuntu:18.04
 
 RUN apt-get update && apt-get install -y \
-  libav-tools \
+  ffmpeg \
   python3.6 \
   python3.6-dev \
   build-essential \
   curl
 
-RUN curl -L https://bootstrap.pypa.io/get-pip.py \
-  -o /get-pip.py && \
-  python3.6 /get-pip.py && \
-  rm /get-pip.py
+RUN apt-get install -y python3-pip
 
 RUN ln -s /usr/bin/python3.6 /usr/bin/python
 
