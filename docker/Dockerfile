@@ -14,4 +14,4 @@ RUN curl -L https://bootstrap.pypa.io/get-pip.py \
 
 RUN ln -s /usr/bin/python3.6 /usr/bin/python
 
-RUN pip install youtube_dl==2019.4.1
+RUN pip install youtube_dl==2019.05.20
