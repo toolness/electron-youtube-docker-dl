@@ -11,4 +11,4 @@ RUN apt-get install -y python3-pip
 
 RUN ln -s /usr/bin/python3.6 /usr/bin/python
 
-RUN pip install youtube_dl==2019.05.20
+RUN pip3 install youtube_dl==2019.8.2
