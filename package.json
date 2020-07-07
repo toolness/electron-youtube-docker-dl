@@ -13,7 +13,7 @@
     "@types/react-redux": "^4.4.36",
     "@types/through2": "^2.0.32",
     "dockerode": "^2.3.1",
-    "electron": "^1.4.15",
+    "electron": "^7.2.4",
     "expect.js": "^0.3.1",
     "mocha": "^3.2.0",
     "react": "^15.4.2",
